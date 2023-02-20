@@ -49,6 +49,7 @@ namespace Cobilas.CLI.ObjectiveList
         private bool SetHelpFunc(ErrorMensager error, CLIArgCollection collection) {
             //===========================[set replace title]=====================================
             Console.WriteLine("{0} [set] [--replacetile/-rt]\r\n", Program.FriendlyName);
+			Console.WriteLine("{0} [set] [--replacetile/-rt] [--title/-t] [opc-arg] [--path/-p] [opc-arg:path] [arg:file path]", Program.FriendlyName);
             Console.WriteLine("arguments");
             PrintHelp("{arg:file path}                  ", "Relative or full path of the target file.\r\n");
 
@@ -57,6 +58,7 @@ namespace Cobilas.CLI.ObjectiveList
             PrintHelp("[--title/-t] {arg}               ", "The task title.\r\n");
             //===========================[set replace description]=====================================
             Console.WriteLine("{0} [set] [--replacedesc/-rd]\r\n", Program.FriendlyName);
+			Console.WriteLine("{0} [set] [--replacedesc/-rd] [--description/-d] [opc-arg] [--path/-p] [opc-arg:path] [arg:file path]", Program.FriendlyName);
             Console.WriteLine("arguments");
             PrintHelp("{arg:file path}                  ", "Relative or full path of the target file.\r\n");
 
@@ -65,6 +67,7 @@ namespace Cobilas.CLI.ObjectiveList
             PrintHelp("[--description/-d] {arg}         ", "The task description.\r\n");
             //===========================[set replace status]=====================================
             Console.WriteLine("{0} [set] [--replacestatus/-rs]\r\n", Program.FriendlyName);
+			Console.WriteLine("{0} [set] [--replacestatus/-rs] [--status/--s] [arg[true|false]] [--path/-p] [opc-arg:path] [arg:file path]", Program.FriendlyName);
             Console.WriteLine("arguments");
             PrintHelp("{arg:file path}                  ", "Relative or full path of the target file.\r\n");
 
@@ -73,7 +76,8 @@ namespace Cobilas.CLI.ObjectiveList
             PrintHelp("[--status/--s] {arg[true|false]} ", "The status of the task.\r\n");
             //===========================[set move]=====================================
             Console.WriteLine("{0} [set] [--move/-m]\r\n", Program.FriendlyName);
-            Console.WriteLine("arguments");
+            Console.WriteLine("{0} [set] [--move/-m] [--moveto/-mt] [opc-arg] [--path/-p] [opc-arg:path] [arg:file path]", Program.FriendlyName);
+			Console.WriteLine("arguments");
             PrintHelp("{arg:file path}                  ", "Relative or full path of the target file.\r\n");
 
             Console.WriteLine("mandatory options");
@@ -85,6 +89,10 @@ namespace Cobilas.CLI.ObjectiveList
         private bool ElementHelpFunc(ErrorMensager error, CLIArgCollection collection) {
             //==============================[element add]==============================
             Console.WriteLine("{0} [--element/-e] [add]\r\n", Program.FriendlyName);
+			Console.WriteLine("{0} [--element/-e] [add] [--title/-t] [opc-arg] [--path/-p] [opc-arg:path] [--description/-d] [opc-arg] [arg:file path]", Program.FriendlyName);
+			Console.WriteLine("{0} [--element/-e] [add] [--title/-t] [opc-arg] [--path/-p] [opc-arg:path] [arg:file path]", Program.FriendlyName);
+			Console.WriteLine("{0} [--element/-e] [add] [--title/-t] [opc-arg] [--description/-d] [opc-arg] [arg:file path]", Program.FriendlyName);
+			Console.WriteLine("{0} [--element/-e] [add] [--title/-t] [opc-arg] [arg:file path]", Program.FriendlyName);
             Console.WriteLine("arguments");
             PrintHelp("{arg:file path}          ", "Relative or full path of the target file.\r\n");
 
@@ -96,6 +104,7 @@ namespace Cobilas.CLI.ObjectiveList
             PrintHelp("[--description/-d] {arg} ", "The task description.\r\n");
             //==============================[element remove]=============================
             Console.WriteLine("{0} [--element/-e] [remove]\r\n", Program.FriendlyName);
+			Console.WriteLine("{0} [--element/-e] [remove] [--path/-p] [opc-arg:path] [arg:file path]", Program.FriendlyName);
             Console.WriteLine("arguments");
             PrintHelp("{arg:file path}          ", "Relative or full path of the target file.\r\n");
 
@@ -114,10 +123,11 @@ namespace Cobilas.CLI.ObjectiveList
         private bool ShowHelpFunc(ErrorMensager error, CLIArgCollection collection) {
             //=============================[show item]=======================================
             Console.WriteLine("{0} [--show/-s] [--item/--i]\r\n", Program.FriendlyName);
+			Console.WriteLine("{0} [--show/-s] [--item/--i] [--path/-p] [opc-arg:path] [arg:file path]", Program.FriendlyName);
             Console.WriteLine("arguments");
             PrintHelp("{arg:file path}    ", "Relative or full path of the target file.\r\n");
 
-            Console.WriteLine("options");
+            Console.WriteLine("mandatory options");
             PrintHelp("[--path/-p]        ", "Represents the path in the task list tree.[example: 1.2.5]");
             PrintHelp("\t{opc-arg:path}   ", "path in the task list tree.\r\n");
             //=============================[show list]=======================================
