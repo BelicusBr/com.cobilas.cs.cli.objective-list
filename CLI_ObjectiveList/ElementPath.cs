@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Linq;
 using Cobilas.Collections;
 
 namespace Cobilas.CLI.ObjectiveList {
@@ -39,6 +40,12 @@ namespace Cobilas.CLI.ObjectiveList {
                 if (other.indexs[I] != indexs[I])
                     return false;
             return true;
+        }
+
+        public static bool ItsValid(string path) {
+            if (string.IsNullOrEmpty(path)) return false;
+            else if (path.Length == 0) return false;
+            return path.All((c) => char.IsNumber(c) || c == '.') && char.IsNumber(path[0]) && char.IsNumber(path[path.Length - 1]);
         }
 
         public static bool IsChild(ElementPath parent, ElementPath child)

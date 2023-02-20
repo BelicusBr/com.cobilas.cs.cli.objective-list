@@ -40,9 +40,11 @@ namespace Cobilas.CLI.ObjectiveList {
 
             if (!Path.IsPathRooted(filePath))
                 filePath = Path.Combine(Program.BaseDirectory, filePath);
-
             if (!File.Exists(filePath)) {
                 error.Add($"'{filePath}' not exists!");
+                return false;
+            } else if (!ElementPath.ItsValid(path)) {
+                error.Add($"[{path}] it is not valid.");
                 return false;
             }
 

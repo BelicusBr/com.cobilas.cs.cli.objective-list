@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections;
 using Cobilas.CLI.Manager;
 using System.Collections.Generic;
@@ -25,14 +26,134 @@ namespace Cobilas.CLI.ObjectiveList {
      *root set --help/-h
      */
     internal struct SetFunc : IEnumerable<KeyValuePair<int, Func<ErrorMensager, CLIArgCollection, bool>>> {
-        public IEnumerator<KeyValuePair<int, Func<ErrorMensager, CLIArgCollection, bool>>> GetEnumerator()
-        {
-            throw new NotImplementedException();
+        IEnumerator<KeyValuePair<int, Func<ErrorMensager, CLIArgCollection, bool>>> IEnumerable<KeyValuePair<int, Func<ErrorMensager, CLIArgCollection, bool>>>.GetEnumerator() {
+            yield return new KeyValuePair<int, Func<ErrorMensager, CLIArgCollection, bool>>(10, SetReplaceTitleFunc);
+            yield return new KeyValuePair<int, Func<ErrorMensager, CLIArgCollection, bool>>(11, SetReplaceDescriptionFunc);
+            yield return new KeyValuePair<int, Func<ErrorMensager, CLIArgCollection, bool>>(12, SetReplaceStatusFunc);
+            yield return new KeyValuePair<int, Func<ErrorMensager, CLIArgCollection, bool>>(13, SetMoveFunc);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
-        {
-            throw new NotImplementedException();
+            => (IEnumerator)(IEnumerable<KeyValuePair<int, Func<ErrorMensager, CLIArgCollection, bool>>>)this;
+
+        private bool SetReplaceTitleFunc(ErrorMensager error, CLIArgCollection collection) {
+            string path = $"0.{collection[collection.IndexOf("--path/-p")].Value}";
+            string newTitle = collection[collection.IndexOf("--title/-t")].Value;
+            string filePath = collection[collection.IndexOf($"{CLICMDArg.alias}0")].Value;
+
+            if (!Path.IsPathRooted(filePath))
+                filePath = Path.Combine(Program.BaseDirectory, filePath);
+
+            if (!File.Exists(filePath)) {
+                error.Add($"'{filePath}' not exists!");
+                return false;
+            } else if (!ElementPath.ItsValid(path)) {
+                error.Add($"[{path}] it is not valid.");
+                return false;
+            }
+
+            using (OTVL_ElementList list = new OTVL_ElementList(filePath)) {
+                if (!list.Contains(path)) {
+                    error.Add($"Path '{path}' not exists!");
+                    return false;
+                }
+                list[path].title = newTitle;
+                list.UnLoad();
+            }
+            return true;
+        }
+
+        private bool SetReplaceDescriptionFunc(ErrorMensager error, CLIArgCollection collection) {
+            string path = $"0.{collection[collection.IndexOf("--path/-p")].Value}";
+            string newTitle = collection[collection.IndexOf("--description/-d")].Value;
+            string filePath = collection[collection.IndexOf($"{CLICMDArg.alias}0")].Value;
+
+            if (!Path.IsPathRooted(filePath))
+                filePath = Path.Combine(Program.BaseDirectory, filePath);
+
+            if (!File.Exists(filePath)) {
+                error.Add($"'{filePath}' not exists!");
+                return false;
+            } else if (!ElementPath.ItsValid(path)) {
+                error.Add($"[{path}] it is not valid.");
+                return false;
+            }
+
+            using (OTVL_ElementList list = new OTVL_ElementList(filePath)) {
+                if (!list.Contains(path)) {
+                    error.Add($"Path '{path}' not exists!");
+                    return false;
+                }
+                list[path].description = newTitle;
+                list.UnLoad();
+            }
+            return true;
+        }
+
+        private bool SetReplaceStatusFunc(ErrorMensager error, CLIArgCollection collection) {
+            string path = $"0.{collection[collection.IndexOf("--path/-p")].Value}";
+            string newTitle = collection[collection.IndexOf("--status/--s")].Value;
+            string filePath = collection[collection.IndexOf($"{CLICMDArg.alias}0")].Value;
+
+            if (!Path.IsPathRooted(filePath))
+                filePath = Path.Combine(Program.BaseDirectory, filePath);
+
+            if (!File.Exists(filePath)) {
+                error.Add($"'{filePath}' not exists!");
+                return false;
+            } else if (!ElementPath.ItsValid(path)) {
+                error.Add($"[{path}] it is not valid.");
+                return false;
+            } else if (bool.TryParse(newTitle, out bool result)) {
+                using OTVL_ElementList list = new OTVL_ElementList(filePath); 
+                if (!list.Contains(path)) {
+                    error.Add($"Path '{path}' not exists!");
+                    return false;
+                }
+                list[path].status = result;
+                list.UnLoad();
+            } else {
+                error.Add($"[{newTitle}] invalid value, use boolean values.[true|false]");
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool SetMoveFunc(ErrorMensager error, CLIArgCollection collection) {
+            string path = $"0.{collection[collection.IndexOf("--path/-p")].Value}";
+            string newPath = $"0.{collection[collection.IndexOf("--moveto/-mt")].Value}";
+            string filePath = collection[collection.IndexOf($"{CLICMDArg.alias}0")].Value;
+
+            if (!Path.IsPathRooted(filePath))
+                filePath = Path.Combine(Program.BaseDirectory, filePath);
+
+            if (!File.Exists(filePath)) {
+                error.Add($"'{filePath}' not exists!");
+                return false;
+            } else if (!ElementPath.ItsValid(path)) {
+                error.Add($"[{path}] it is not valid.");
+                return false;
+            } else if (!ElementPath.ItsValid(newPath)) {
+                error.Add($"[{newPath}] it is not valid.");
+                return false;
+            }
+
+            using (OTVL_ElementList list = new OTVL_ElementList(filePath)) {
+                if (!list.Contains(path)) {
+                    error.Add($"Path '{path}' not exists!");
+                    return false;
+                } else if (!list.Contains(newPath)) {
+                    error.Add($"Path '{newPath}' not exists!");
+                    return false;
+                }
+                OTVL_Element e1 = list[path];
+                OTVL_Element e2 = list[newPath];
+                e1.path = new ElementPath(newPath);
+                e2.path = new ElementPath(path);
+                list.UnLoad();
+            }
+            return true;
         }
     }
 }

@@ -16,6 +16,10 @@ namespace Cobilas.CLI.ObjectiveList {
                 yield return item;
             foreach (KeyValuePair<int, Func<ErrorMensager, CLIArgCollection, bool>> item in new ShowFunc())
                 yield return item;
+            foreach (KeyValuePair<int, Func<ErrorMensager, CLIArgCollection, bool>> item in new HelpFuncs())
+                yield return item;
+            foreach (KeyValuePair<int, Func<ErrorMensager, CLIArgCollection, bool>> item in new SetFunc())
+                yield return item;
         }
     }
 }

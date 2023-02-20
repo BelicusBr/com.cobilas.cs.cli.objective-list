@@ -64,6 +64,9 @@ namespace Cobilas.CLI.ObjectiveList {
             if (!File.Exists(filePath)) {
                 error.Add($"'{filePath}' not exists!");
                 return false;
+            } else if (!ElementPath.ItsValid(path)) {
+                error.Add($"[{path}] it is not valid.");
+                return false;
             }
 
             using (OTVL_ElementList list = new OTVL_ElementList(filePath)) {
@@ -107,6 +110,9 @@ namespace Cobilas.CLI.ObjectiveList {
 
             if (!File.Exists(filePath)) {
                 error.Add($"'{filePath}' not exists!");
+                return false;
+            } else if (!ElementPath.ItsValid(path)) {
+                error.Add($"[{path}] it is not valid.");
                 return false;
             }
 
