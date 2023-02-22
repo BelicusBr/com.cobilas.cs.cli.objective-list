@@ -4,13 +4,15 @@ using System.Linq;
 using Cobilas.Collections;
 
 namespace Cobilas.CLI.ObjectiveList {
-    internal struct ElementPath : IDisposable, IEquatable<ElementPath> {
+    internal struct ElementPath : IDisposable, IEquatable<ElementPath>, IComparable<ElementPath> {
         private int[] indexs;
 
         public int Cell => ArrayManipulation.ArrayLength(indexs);
 
         public static ElementPath Root => new ElementPath("0");
         public static ElementPath Empty => new ElementPath(string.Empty);
+
+        public int this[int index] => indexs[index];
 
         public ElementPath(string path) {
             indexs = Array.Empty<int>();
@@ -42,6 +44,12 @@ namespace Cobilas.CLI.ObjectiveList {
             return true;
         }
 
+        public int CompareTo(ElementPath other) {
+            if (Cell < other.Cell) return -1;
+            else if (Cell > other.Cell) return 1;
+            return indexs[Cell - 1] > other.indexs[Cell - 1] ? 1 : (indexs[Cell - 1] < other.indexs[Cell - 1] ? -1 : 0);
+        }
+
         public static bool ItsValid(string path) {
             if (string.IsNullOrEmpty(path)) return false;
             else if (path.Length == 0) return false;
@@ -59,7 +67,13 @@ namespace Cobilas.CLI.ObjectiveList {
             };
         }
 
+        public static explicit operator ElementPath(string stg) => new ElementPath(stg);
+        public static explicit operator string(ElementPath stg) => stg.ToString();
+
         public static bool operator ==(ElementPath A, ElementPath B) => A.Equals(B);
         public static bool operator !=(ElementPath A, ElementPath B) => !(A == B);
+
+        public static bool operator >(ElementPath A, ElementPath B) => A.CompareTo(B) > 0;
+        public static bool operator <(ElementPath A, ElementPath B) => A.CompareTo(B) < 0;
     }
 }

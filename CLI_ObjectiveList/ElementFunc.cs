@@ -64,9 +64,6 @@ namespace Cobilas.CLI.ObjectiveList {
             if (!File.Exists(filePath)) {
                 error.Add($"'{filePath}' not exists!");
                 return false;
-            } else if (!ElementPath.ItsValid(path)) {
-                error.Add($"[{path}] it is not valid.");
-                return false;
             }
 
             using (OTVL_ElementList list = new OTVL_ElementList(filePath)) {
@@ -74,19 +71,27 @@ namespace Cobilas.CLI.ObjectiveList {
                     int num1 = 0;
                     while (list.Contains(path = $"0.{num1}"))
                         ++num1;
+                } else {
+                    path = $"0.{path}";
+                    if (!ElementPath.ItsValid(path)) {
+                        error.Add($"[{path}] it is not valid.");
+                        return false;
+                    } else if (!list.Contains(path)) {
+                        error.Add($"Path '{path}' not exists!");
+                        return false;
+                    } else {
+                        string s_path = (string)path.Clone();
+                        int num1 = 0;
+                        while (list.Contains(s_path = $"{path}.{num1}"))
+                            ++num1;
+                        path = s_path;
+                    }
                 }
-                else path = $"0.{path}";
 
-                ElementPath elementPath = ElementPath.GetParent(new ElementPath(path));
-                if (elementPath.ToString() != "0" && !list.Contains(elementPath.ToString())) {
-                    error.Add($"Path '{elementPath}' not exists!");
-                    return false;
-                }
-
-                if (list.Contains(path)) {
-                    error.Add($"Element '[{path}]{title}' exists!");
-                    return false;
-                }
+                //if (list.Contains(path)) {
+                //    error.Add($"Element '[{path}]{title}' exists!");
+                //    return false;
+                //}
                 OTVL_Element element = new OTVL_Element();
                 element.title = title;
                 element.status = false;

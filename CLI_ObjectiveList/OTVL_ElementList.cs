@@ -69,7 +69,9 @@ namespace Cobilas.CLI.ObjectiveList {
             => ArrayManipulation.ClearArraySafe(ref elements);
 
         public void UnLoad() {
-            using FileStream stream = File.OpenWrite(filePath); stream.SetLength(0L);
+            using FileStream stream = File.OpenWrite(filePath);
+            stream.SetLength(0L);
+            Reorder();
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.Indent = true;
             settings.IndentChars = "\r\n";
@@ -93,11 +95,49 @@ namespace Cobilas.CLI.ObjectiveList {
                     e.ForEach((ElementTag e1) => {
                         switch (e1.Name) {
                             case "title": element.title = e1.Value.ValueToString; break;
-                            case "descriptio": element.description = e1.Value.ValueToString; break;
+                            case "descriptio": element.description = e1.Value == null ? string.Empty : e1.Value.ValueToString; break;
                         }
                     });
                 }
             });
+        }
+
+        private void Reorder() {
+            OTVL_Element[] res = (OTVL_Element[])null;
+            Dictionary<string, OTVL_Element[]> pairs = new Dictionary<string, OTVL_Element[]>();
+
+            for (int I = 0; I < Count; I++) {
+                if (!pairs.ContainsKey((string)this[I].Parent)) {
+                    pairs.Add((string)this[I].Parent, new OTVL_Element[] { this[I] });
+                    continue;
+                }
+                res = pairs[(string)this[I].Parent];
+                bool add = true;
+                for (int J = 0; J < res.Length; J++)
+                    if (this[I].path < res[J].path) {
+                        ArrayManipulation.Insert(this[I], J, ref res);
+                        add = false;
+                        break;
+                    }
+
+                if (add)
+                    ArrayManipulation.Add(this[I], ref res);
+                pairs[(string)this[I].Parent] = res;
+            }
+            res = (OTVL_Element[])null;
+            ArrayManipulation.Add(pairs[(string)ElementPath.Root], ref res);
+            foreach (KeyValuePair<string, OTVL_Element[]> item in pairs)
+                if (item.Key != (string)ElementPath.Root)
+                    for (int I = 0; I < res.Length; I++)
+                        if ((string)res[I].path == item.Key) {
+                            if (res.Length == I + 1)
+                                ArrayManipulation.Add(item.Value, ref res);
+                            else ArrayManipulation.Insert(item.Value, I + 1, ref res);
+                            break;
+                        }
+            pairs.Clear();
+            ArrayManipulation.ClearArraySafe(ref elements);
+            elements = res;
         }
 
         IEnumerator IEnumerable.GetEnumerator() => (IEnumerator)this;
