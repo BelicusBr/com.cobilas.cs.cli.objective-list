@@ -30,6 +30,7 @@ namespace Cobilas.CLI.ObjectiveList {
 
             collection.Clear();
             root.Dispose();
+            GC.Collect();
         }
 
         static string JoinArgs(string[] args) {
