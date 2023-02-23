@@ -6,27 +6,32 @@ using Cobilas.CLI.Manager;
 namespace Cobilas.CLI.ObjectiveList {
     class Program {
 
-        public const string version = "1.8.4";
+        public const string version = "1.9.1";
         internal static string BaseDirectory => Environment.CurrentDirectory;
         internal static string FriendlyName => AppDomain.CurrentDomain.FriendlyName;
 
         static void Main(string[] args) {
 
-            if (ArrayManipulation.EmpytArray(args)) {
-                Console.WriteLine("Enter some argument.");
-                return;
-            }
-
             ErrorMensager error = new ErrorMensager();
             CLIArgCollection collection = new CLIArgCollection();
             CLICommand root = CLIBase.Create();
+            try {
+                if (ArrayManipulation.EmpytArray(args))
+                    PrintError("Enter some argument.");
 
-            if (CLICommand.Cateter(new StringArrayToIEnumerator(args), root, collection, error, out int funcID)) {
-                if (funcID == 0)
-                    Console.WriteLine("Command '{0}' not found.", JoinArgs(args));
-                else if (!FuncHub.Invok(funcID, error, collection))
-                    PrintError(error);
-            } else PrintError(error);
+                if (CLICommand.Cateter(new StringArrayToIEnumerator(args), root, collection, error, out int funcID)) {
+                    if (funcID == 0)
+                        PrintError($"Command '{JoinArgs(args)}' not found.");
+                    else if (!FuncHub.Invok(funcID, error, collection))
+                        PrintError(error);
+                } else PrintError(error);
+
+            } catch {
+                collection.Clear();
+                root.Dispose();
+
+                throw;
+            }
 
             collection.Clear();
             root.Dispose();
@@ -41,14 +46,13 @@ namespace Cobilas.CLI.ObjectiveList {
         }
 
         static void PrintError(ErrorMensager msm) {
+            StringBuilder builder = new StringBuilder();
             foreach (var item in msm)
-                PrintError(item);
+                builder.AppendLine(item);
+            PrintError(builder.ToString());
         }
 
-        static void PrintError(string msm) {
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine(msm);
-            Console.ResetColor();
-        }
+        static void PrintError(string msm)
+            => throw new TaskListException(msm);
     }
 }

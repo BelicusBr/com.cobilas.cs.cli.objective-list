@@ -49,7 +49,7 @@ namespace Cobilas.CLI.ObjectiveList {
                 error.Add($"'{folderPath}' not found!");
                 return false;
             } else if (File.Exists(filePath)) {
-                error.Add($"'{folderPath}' exists!");
+                error.Add($"'{filePath}' exists!");
                 return false;
             }
 
