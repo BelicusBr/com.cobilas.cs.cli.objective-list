@@ -60,6 +60,8 @@ namespace Cobilas.CLI.ObjectiveList {
 
         private bool ShowListFunc(ErrorMensager error, CLIArgCollection collection) {
             string filePath = collection[collection.IndexOf($"{CLICMDArg.alias}0")].Value;
+            string s_status = collection.Contains("--status/--s") ? collection[collection.IndexOf($"--status/--s")].Value : null;
+            bool status = false;
 
             if (!Path.IsPathRooted(filePath))
                 filePath = Path.Combine(Program.BaseDirectory, filePath);
@@ -69,9 +71,18 @@ namespace Cobilas.CLI.ObjectiveList {
                 return false;
             }
 
+            if (!string.IsNullOrEmpty(s_status))
+                if (!bool.TryParse(s_status, out status)) {
+                    error.Add($"[{s_status}] invalid value, use boolean values.[true|false]");
+                    return false;
+                }
+
             using (OTVL_ElementList list = new OTVL_ElementList(filePath))
                 foreach (var item in list)
-                    PrintElement(item);
+                    if (!string.IsNullOrEmpty(s_status)) {
+                        if (item.status == status)
+                            PrintElement(item);
+                    } else PrintElement(item);
             return true;
         }
 

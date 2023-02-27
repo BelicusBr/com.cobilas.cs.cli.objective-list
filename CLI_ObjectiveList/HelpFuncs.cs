@@ -10,7 +10,7 @@ namespace Cobilas.CLI.ObjectiveList
      *root --rename/-r {arg:folder path} {arg:file name} {arg:new file name}
      *root init/-i {arg:file path}
      *root --show/-s --item/--i --path/-p {opc:arg} {arg:file path}
-     *root --show/-s --list/-l {arg:file path}
+     *root --show/-s --list/-l --status/--s {opc:arg[true|false]} {arg:file path}
      *root --clear/-c {arg:file path}
      *root --element/-e add --path/-p {opc:arg} --title/-t {opc:arg} --description/-d {opc:arg} {arg:file path}
      *root --element/-e remove --path/-p {opc:arg} {arg:file path}
@@ -131,9 +131,12 @@ namespace Cobilas.CLI.ObjectiveList
             PrintHelp("[--path/-p]        ", "Represents the path in the task list tree.[example: 1.2.5]");
             PrintHelp("\t{opc-arg:path}   ", "path in the task list tree.\r\n");
             //=============================[show list]=======================================
-            Console.WriteLine("{0} [--show/-s] [--list/-l]\r\n", Program.FriendlyName);
+            Console.WriteLine("{0} [--show/-s] [--list/-l] [--status/--s]\r\n", Program.FriendlyName);
             Console.WriteLine("arguments");
             PrintHelp("{arg:file path}    ", "Relative or full path of the target file.");
+
+            Console.WriteLine("options");
+            PrintHelp("[--status/--s] {arg[true|false]} ", "The status of the task.\r\n");
             return true;
         }
 

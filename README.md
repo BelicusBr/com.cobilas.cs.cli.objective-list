@@ -30,10 +30,12 @@ Displays task list items.</br>
 #### mandatory options
 [--path/-p] [opc-arg:path] Represents the path in the task list tree.[example: 1.2.5]
 
-### [AppName] [--show/-s] [--list/-l] [arg:file path]
+### [AppName] [--show/-s] [--list/-l] [--status/--s] [arg:file path]
 Displays task list items.</br>
 
 [arg:file path]		Relative or full path of the target file.
+#### options
+[--status/--s] [arg[true|false]] The status of the task.
 
 ### [AppName] [--element/-e] [add] [arg:file path]
 Changes the task list.</br>

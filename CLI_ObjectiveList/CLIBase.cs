@@ -7,7 +7,7 @@ namespace Cobilas.CLI.ObjectiveList {
          *root --rename/-r {arg:folder path} {arg:file name} {arg:new file name}
          *root init/-i {arg:file path}
          *root --show/-s --item/--i --path/-p {opc:arg} {arg:file path}
-         *root --show/-s --list/-l {arg:file path}
+         *root --show/-s --list/-l --status/--s {opc:arg[true|false]} {arg:file path}
          *root --clear/-c {arg:file path}
          *root --element/-e add --path/-p {opc:arg} --title/-t {opc:arg} --description/-d {opc:arg} {arg:file path}
          *root --element/-e remove --path/-p {opc:arg} {arg:file path}
@@ -34,7 +34,10 @@ namespace Cobilas.CLI.ObjectiveList {
                                     new CLIOption(1, "--path/-p", false),
                                     CLICMDArg.Default
                                 ),
-                            new CLICommand(9, "--list/-l", CLICMDArg.Default)
+                            new CLICommand(9, "--list/-l",
+                                    new CLIOption(1, "--status/--s"),
+                                    CLICMDArg.Default
+                                )
                         ),
                     new CLICommand(3, "--help/-h"),
                     new CLICommand(4, "--version/-v"),

@@ -21,6 +21,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="CLIBase.cs~RF1973ae29.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Cobilas.CLI.Manager" Version="1.2.2" />
     <PackageReference Include="Cobilas.Collections" Version="1.1.0" />
     <PackageReference Include="Cobilas.Core.net45" Version="1.0.0" />
