@@ -104,7 +104,7 @@ namespace Cobilas.CLI.ObjectiveList {
             return true;
         }
 
-        private void PrintHelp(string func, string msm) {
+        private static void PrintHelp(string func, string msm) {
             Console.Write("\t{0}", func);
             Console.ForegroundColor = ConsoleColor.DarkGray;
             Console.Write("{0}\r\n", msm);

@@ -75,7 +75,7 @@ namespace Cobilas.CLI.ObjectiveList {
             return true;
         }
 
-        private void PrintElement(OTVL_Element element) {
+        private static void PrintElement(OTVL_Element element) {
             Print("/=====[", ConsoleColor.DarkGreen);
             Print(element.title, ConsoleColor.Yellow);
             Print("]=====\r\n", ConsoleColor.DarkGreen);
@@ -94,7 +94,7 @@ namespace Cobilas.CLI.ObjectiveList {
             Print("/===== ===== =====\r\n", ConsoleColor.DarkGreen);
         }
 
-        private void Print(string txt, ConsoleColor color) {
+        private static void Print(string txt, ConsoleColor color) {
             Console.ForegroundColor = color;
             Console.Write(txt);
             Console.ResetColor();
