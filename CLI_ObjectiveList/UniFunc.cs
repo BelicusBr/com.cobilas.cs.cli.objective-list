@@ -59,8 +59,9 @@ namespace Cobilas.CLI.ObjectiveList {
             using (FileStream stream = File.Create(filePath)) {
                 using XmlWriter writer = XmlWriter.Create(stream, settings);
                 writer.WriteElementTag(
-                        new ElementTag("Root")
+                        new ElementTag("Root", new ElementAttribute("version", "2.0"))
                     );
+                Console.WriteLine($"File \"{filePath}\" create!");
             }
             return true;
         }
@@ -81,8 +82,9 @@ namespace Cobilas.CLI.ObjectiveList {
             using (FileStream stream = File.Create(filePath)) {
                 using XmlWriter writer = XmlWriter.Create(stream, settings);
                 writer.WriteElementTag(
-                        new ElementTag("Root")
+                        new ElementTag("Root", new ElementAttribute("version", "2.0"))
                     );
+                Console.WriteLine($"File \"{filePath}\" clear!");
             }
             return true;
         }

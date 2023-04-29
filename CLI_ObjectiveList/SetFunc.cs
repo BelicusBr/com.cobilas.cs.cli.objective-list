@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Xml;
 using System.Collections;
 using Cobilas.CLI.Manager;
 using System.Collections.Generic;
@@ -37,7 +38,7 @@ namespace Cobilas.CLI.ObjectiveList {
             => (IEnumerator)(IEnumerable<KeyValuePair<int, Func<ErrorMensager, CLIArgCollection, bool>>>)this;
 
         private bool SetReplaceTitleFunc(ErrorMensager error, CLIArgCollection collection) {
-            string path = $"0.{collection[collection.IndexOf("--path/-p")].Value}";
+            string path = collection[collection.IndexOf("--path/-p")].Value;
             string newTitle = collection[collection.IndexOf("--title/-t")].Value;
             string filePath = collection[collection.IndexOf($"{CLICMDArg.alias}0")].Value;
 
@@ -52,19 +53,31 @@ namespace Cobilas.CLI.ObjectiveList {
                 return false;
             }
 
-            using (OTVL_ElementList list = new OTVL_ElementList(filePath)) {
-                if (!list.Contains(path)) {
+            ElementContainer list = null;
+            using (XmlReader reader = XmlReader.Create(filePath)) {
+                list = (ElementContainer)reader.GetElementTag();
+                if (!list.Contains(new ElementPath(path))) {
                     error.Add($"Path '{path}' not exists!");
                     return false;
                 }
-                list[path].title = newTitle;
-                list.UnLoad();
+                list[new ElementPath(path)].title = newTitle;
+                Console.WriteLine($"[{new ElementPath(path)}]Changed title");
+            }
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = true;
+            settings.IndentChars = "\r\n";
+            using (FileStream file = File.Open(filePath, FileMode.OpenOrCreate)) {
+                file.SetLength(0L);
+                using (XmlWriter writer = XmlWriter.Create(file, settings)) {
+                    writer.WriteElementTag((ElementTag)list);
+                    list.Dispose();
+                }
             }
             return true;
         }
 
         private bool SetReplaceDescriptionFunc(ErrorMensager error, CLIArgCollection collection) {
-            string path = $"0.{collection[collection.IndexOf("--path/-p")].Value}";
+            string path = collection[collection.IndexOf("--path/-p")].Value;
             string newTitle = collection[collection.IndexOf("--description/-d")].Value;
             string filePath = collection[collection.IndexOf($"{CLICMDArg.alias}0")].Value;
 
@@ -79,19 +92,31 @@ namespace Cobilas.CLI.ObjectiveList {
                 return false;
             }
 
-            using (OTVL_ElementList list = new OTVL_ElementList(filePath)) {
-                if (!list.Contains(path)) {
+            ElementContainer list = null;
+            using (XmlReader reader = XmlReader.Create(filePath)) {
+                list = (ElementContainer)reader.GetElementTag();
+                if (!list.Contains(new ElementPath(path))) {
                     error.Add($"Path '{path}' not exists!");
                     return false;
                 }
-                list[path].description = newTitle;
-                list.UnLoad();
+                list[new ElementPath(path)].description = newTitle;
+                Console.WriteLine($"[{new ElementPath(path)}]Changed description");
+            }
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = true;
+            settings.IndentChars = "\r\n";
+            using (FileStream file = File.Open(filePath, FileMode.OpenOrCreate)) {
+                file.SetLength(0L);
+                using (XmlWriter writer = XmlWriter.Create(file, settings)) {
+                    writer.WriteElementTag((ElementTag)list);
+                    list.Dispose();
+                }
             }
             return true;
         }
 
         private bool SetReplaceStatusFunc(ErrorMensager error, CLIArgCollection collection) {
-            string path = $"0.{collection[collection.IndexOf("--path/-p")].Value}";
+            string path = collection[collection.IndexOf("--path/-p")].Value;
             string newTitle = collection[collection.IndexOf("--status/--s")].Value;
             string filePath = collection[collection.IndexOf($"{CLICMDArg.alias}0")].Value;
 
@@ -105,13 +130,26 @@ namespace Cobilas.CLI.ObjectiveList {
                 error.Add($"[{path}] it is not valid.");
                 return false;
             } else if (bool.TryParse(newTitle, out bool result)) {
-                using OTVL_ElementList list = new OTVL_ElementList(filePath); 
-                if (!list.Contains(path)) {
-                    error.Add($"Path '{path}' not exists!");
-                    return false;
+                ElementContainer list = null;
+                using (XmlReader reader = XmlReader.Create(filePath)) {
+                    list = (ElementContainer)reader.GetElementTag();
+                    if (!list.Contains(new ElementPath(path))) {
+                        error.Add($"Path '{path}' not exists!");
+                        return false;
+                    }
+                    list[new ElementPath(path)].status = result;
+                    Console.WriteLine($"[{new ElementPath(path)}]Changed status");
                 }
-                list[path].status = result;
-                list.UnLoad();
+                XmlWriterSettings settings = new XmlWriterSettings();
+                settings.Indent = true;
+                settings.IndentChars = "\r\n";
+                using (FileStream file = File.Open(filePath, FileMode.OpenOrCreate)) {
+                    file.SetLength(0L);
+                    using (XmlWriter writer = XmlWriter.Create(file, settings)) {
+                        writer.WriteElementTag((ElementTag)list);
+                        list.Dispose();
+                    }
+                }
             } else {
                 error.Add($"[{newTitle}] invalid value, use boolean values.[true|false]");
                 return false;
@@ -121,8 +159,8 @@ namespace Cobilas.CLI.ObjectiveList {
         }
 
         private bool SetMoveFunc(ErrorMensager error, CLIArgCollection collection) {
-            string path = $"0.{collection[collection.IndexOf("--path/-p")].Value}";
-            string newPath = $"0.{collection[collection.IndexOf("--moveto/-mt")].Value}";
+            string path = collection[collection.IndexOf("--path/-p")].Value;
+            string newPath = collection[collection.IndexOf("--moveto/-mt")].Value;
             string filePath = collection[collection.IndexOf($"{CLICMDArg.alias}0")].Value;
 
             if (!Path.IsPathRooted(filePath))
@@ -139,19 +177,27 @@ namespace Cobilas.CLI.ObjectiveList {
                 return false;
             }
 
-            using (OTVL_ElementList list = new OTVL_ElementList(filePath)) {
-                if (!list.Contains(path)) {
+            ElementContainer list = null;
+            using (XmlReader reader = XmlReader.Create(filePath)) {
+                list = (ElementContainer)reader.GetElementTag();
+                if (!list.Contains(new ElementPath(path))) {
                     error.Add($"Path '{path}' not exists!");
                     return false;
-                } else if (!list.Contains(newPath)) {
-                    error.Add($"Path '{newPath}' not exists!");
-                    return false;
                 }
-                OTVL_Element e1 = list[path];
-                OTVL_Element e2 = list[newPath];
-                e1.path = new ElementPath(newPath);
-                e2.path = new ElementPath(path);
-                list.UnLoad();
+                ElementItem temp = list[new ElementPath(path)];
+                list.Remove(new ElementPath(path));
+                list.Add(new ElementPath(newPath), temp);
+                Console.WriteLine($"Element '{new ElementPath(path)}' move to '{new ElementPath(newPath)}'");
+            }
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = true;
+            settings.IndentChars = "\r\n";
+            using (FileStream file = File.Open(filePath, FileMode.OpenOrCreate)) {
+                file.SetLength(0L);
+                using (XmlWriter writer = XmlWriter.Create(file, settings)) {
+                    writer.WriteElementTag((ElementTag)list);
+                    list.Dispose();
+                }
             }
             return true;
         }

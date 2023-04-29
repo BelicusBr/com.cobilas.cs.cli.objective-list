@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Xml;
 using System.Text;
-
+#if NOCODE
 namespace Cobilas.CLI.ObjectiveList {
+    [Obsolete]
     internal class OTVL_Element : IDisposable {
         public bool status;
         public string title;
@@ -36,3 +37,4 @@ namespace Cobilas.CLI.ObjectiveList {
                 );
     }
 }
+#endif

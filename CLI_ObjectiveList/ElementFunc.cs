@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Xml;
 using System.Collections;
 using Cobilas.CLI.Manager;
 using System.Collections.Generic;
@@ -66,23 +67,24 @@ namespace Cobilas.CLI.ObjectiveList {
                 return false;
             }
 
-            using (OTVL_ElementList list = new OTVL_ElementList(filePath)) {
+            ElementContainer elements = null;
+            using (XmlReader reader = XmlReader.Create(filePath)) {
+                elements = (ElementContainer)reader.GetElementTag();
                 if (string.IsNullOrEmpty(path)) {
                     int num1 = 0;
-                    while (list.Contains(path = $"0.{num1}"))
+                    while (elements.Contains(new ElementPath(path = num1.ToString())))
                         ++num1;
                 } else {
-                    path = $"0.{path}";
                     if (!ElementPath.ItsValid(path)) {
                         error.Add($"[{path}] it is not valid.");
                         return false;
-                    } else if (!list.Contains(path)) {
+                    } else if (!elements.Contains(new ElementPath(path))) {
                         error.Add($"Path '{path}' not exists!");
                         return false;
                     } else {
                         string s_path = (string)path.Clone();
                         int num1 = 0;
-                        while (list.Contains(s_path = $"{path}.{num1}"))
+                        while (elements.Contains(new ElementPath(s_path = $"{path}.{num1}")))
                             ++num1;
                         path = s_path;
                     }
@@ -92,14 +94,23 @@ namespace Cobilas.CLI.ObjectiveList {
                 //    error.Add($"Element '[{path}]{title}' exists!");
                 //    return false;
                 //}
-                OTVL_Element element = new OTVL_Element();
+                ElementItem element = new ElementItem(false, title, description);
                 element.title = title;
                 element.status = false;
                 element.description = description;
                 element.path = new ElementPath(path);
-                list.Add(element);
+                elements.Add(element);
                 Console.WriteLine("Element '[{0}]{1}' has been added!", element.path, element.title);
-                list.UnLoad();
+            }
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = true;
+            settings.IndentChars = "\r\n";
+            using (FileStream file = File.Open(filePath, FileMode.OpenOrCreate)) {
+                file.SetLength(0L);
+                using (XmlWriter writer = XmlWriter.Create(file, settings)) {
+                    writer.WriteElementTag((ElementTag)elements);
+                    elements.Dispose();
+                }
             }
 
             return true;
@@ -107,7 +118,7 @@ namespace Cobilas.CLI.ObjectiveList {
 
         //root remove --element/-e --path/-p {opc:arg} {arg:file path}
         private bool RemoveElementFunc(ErrorMensager error, CLIArgCollection collection) {
-            string path = $"0.{collection[collection.IndexOf("--path/-p")].Value}";
+            string path = collection[collection.IndexOf("--path/-p")].Value;
             string filePath = collection[collection.IndexOf($"{CLICMDArg.alias}0")].Value;
 
             if (!Path.IsPathRooted(filePath))
@@ -121,15 +132,26 @@ namespace Cobilas.CLI.ObjectiveList {
                 return false;
             }
 
-            using (OTVL_ElementList list = new OTVL_ElementList(filePath)) {
-                if (!list.Contains(path)) {
+            ElementContainer list = null;
+            using (XmlReader reader = XmlReader.Create(filePath)) {
+                list = (ElementContainer)reader.GetElementTag();
+                if (!list.Contains(new ElementPath(path))) {
                     error.Add($"Path '{path}' not exists!");
                     return false;
                 }
 
-                Console.WriteLine("Element '[{0}]{1}' has been removed!", path, list[path].title);
-                _ = list.Remove(path);
-                list.UnLoad();
+                Console.WriteLine("Element '[{0}]{1}' has been removed!", path, list[new ElementPath(path)].title);
+                _ = list.Remove(new ElementPath(path));
+            }
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = true;
+            settings.IndentChars = "\r\n";
+            using (FileStream file = File.Open(filePath, FileMode.OpenOrCreate)) {
+                file.SetLength(0L);
+                using (XmlWriter writer = XmlWriter.Create(file, settings)) {
+                    writer.WriteElementTag((ElementTag)list);
+                    list.Dispose();
+                }
             }
 
             return true;

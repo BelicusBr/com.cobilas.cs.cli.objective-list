@@ -5,8 +5,8 @@ using Cobilas.CLI.Manager;
 
 namespace Cobilas.CLI.ObjectiveList {
     class Program {
-
-        public const string version = "1.11.1";
+        //2.0.0
+        public const string version = "2.1.8";
         internal static string BaseDirectory => Environment.CurrentDirectory;
         internal static string FriendlyName => AppDomain.CurrentDomain.FriendlyName;
 

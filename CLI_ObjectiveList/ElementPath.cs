@@ -7,9 +7,10 @@ namespace Cobilas.CLI.ObjectiveList {
     internal struct ElementPath : IDisposable, IEquatable<ElementPath>, IComparable<ElementPath> {
         private int[] indexs;
 
+        public int[] Indexs => indexs;
         public int Cell => ArrayManipulation.ArrayLength(indexs);
 
-        public static ElementPath Root => new ElementPath("0");
+        public static ElementPath Root => new ElementPath("-1");
         public static ElementPath Empty => new ElementPath(string.Empty);
 
         public int this[int index] => indexs[index];
@@ -22,6 +23,7 @@ namespace Cobilas.CLI.ObjectiveList {
         }
 
         public override string ToString() {
+            if (Cell == 0) return string.Empty;
             StringBuilder builder = new StringBuilder();
             foreach (int item in indexs)
                 builder.AppendFormat("{0}.", item);
@@ -60,6 +62,8 @@ namespace Cobilas.CLI.ObjectiveList {
             => parent == GetParent(child);
 
         public static ElementPath GetParent(ElementPath target) {
+            int count = target.indexs.Length - 1;
+            if (count <= 0) return ElementPath.Root;
             int[] indexs = (int[])target.indexs.Clone();
             Array.Resize(ref indexs, target.indexs.Length - 1);
             return new ElementPath() {

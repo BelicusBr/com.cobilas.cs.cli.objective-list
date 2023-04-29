@@ -4,8 +4,9 @@ using System.Xml;
 using System.Collections;
 using Cobilas.Collections;
 using System.Collections.Generic;
-
+#if NOCODE
 namespace Cobilas.CLI.ObjectiveList {
+    [Obsolete]
     internal class OTVL_ElementList : IDisposable, IReadOnlyList<OTVL_Element>, ICollection<OTVL_Element> {
         private bool disposedValue;
         private OTVL_Element[] elements;
@@ -153,3 +154,4 @@ namespace Cobilas.CLI.ObjectiveList {
         }
     }
 }
+#endif

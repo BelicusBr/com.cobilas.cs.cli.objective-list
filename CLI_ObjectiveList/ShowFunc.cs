@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Xml;
 using System.Collections;
 using Cobilas.CLI.Manager;
 using System.Collections.Generic;
@@ -35,7 +36,7 @@ namespace Cobilas.CLI.ObjectiveList {
             => (IEnumerator)(IEnumerable<KeyValuePair<int, Func<ErrorMensager, CLIArgCollection, bool>>>)this;
 
         private bool ShowItemFunc(ErrorMensager error, CLIArgCollection collection) {
-            string path = $"0.{collection[collection.IndexOf("--path/-p")].Value}";
+            string path = collection[collection.IndexOf("--path/-p")].Value;
             string filePath = collection[collection.IndexOf($"{CLICMDArg.alias}0")].Value;
 
             if (!Path.IsPathRooted(filePath))
@@ -48,12 +49,14 @@ namespace Cobilas.CLI.ObjectiveList {
                 return false;
             }
 
-            using (OTVL_ElementList list = new OTVL_ElementList(filePath)) {
-                if (!list.Contains(path)) {
+            using (XmlReader reader = XmlReader.Create(filePath)) {
+                using ElementContainer list = (ElementContainer)reader.GetElementTag();
+                ElementPath path1 = new ElementPath(path);
+                if (!list.Contains(path1)) {
                     error.Add($"Path '{path}' not exists!");
                     return false;
                 }
-                PrintElement(list[path]);
+                ElementContainer.PrintElementContainer(list[path1]);
             }
             return true;
         }
@@ -76,39 +79,11 @@ namespace Cobilas.CLI.ObjectiveList {
                     error.Add($"[{s_status}] invalid value, use boolean values.[true|false]");
                     return false;
                 }
-
-            using (OTVL_ElementList list = new OTVL_ElementList(filePath))
-                foreach (var item in list)
-                    if (!string.IsNullOrEmpty(s_status)) {
-                        if (item.status == status)
-                            PrintElement(item);
-                    } else PrintElement(item);
-            return true;
-        }
-
-        private static void PrintElement(OTVL_Element element) {
-            Print("/=====[", ConsoleColor.DarkGreen);
-            Print(element.title, ConsoleColor.Yellow);
-            Print("]=====\r\n", ConsoleColor.DarkGreen);
-
-            Print("Path[", ConsoleColor.DarkGray);
-            Print(element.path.ToString(), ConsoleColor.DarkCyan);
-            Print("]--Status[", ConsoleColor.DarkGray);
-            Print(element.status.ToString(), ConsoleColor.DarkBlue);
-            Print("]\r\n", ConsoleColor.DarkGray);
-
-            if (!string.IsNullOrEmpty(element.description)) {
-                Print("Description:\r\n", ConsoleColor.Green);
-                Console.WriteLine(element.description);
+            using (XmlReader reader = XmlReader.Create(filePath)) {
+                byte r_status = (byte)(!string.IsNullOrEmpty(s_status) ? status ? 1 : 2 : 0);
+                ElementContainer.PrintElementContainer((ElementContainer)reader.GetElementTag(), r_status);
             }
-
-            Print("/===== ===== =====\r\n", ConsoleColor.DarkGreen);
-        }
-
-        private static void Print(string txt, ConsoleColor color) {
-            Console.ForegroundColor = color;
-            Console.Write(txt);
-            Console.ResetColor();
+            return true;
         }
     }
 }
