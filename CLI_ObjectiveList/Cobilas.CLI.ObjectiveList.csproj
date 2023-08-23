@@ -26,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cobilas.CLI.Manager" Version="1.2.2" />
+    <PackageReference Include="Cobilas.CLI.Manager" Version="1.3.0" />
     <PackageReference Include="Cobilas.Collections" Version="2.0.0" />
     <PackageReference Include="Cobilas.Core" Version="3.0.0" />
   </ItemGroup>
