@@ -50,7 +50,7 @@ namespace Cobilas.CLI.ObjectiveList {
             }
 
             using (XmlReader reader = XmlReader.Create(filePath)) {
-                using ElementContainer list = (ElementContainer)reader.GetElementTag();
+                using ElementContainer list = (ElementContainer)reader.ReadXMLIRW();
                 ElementPath path1 = new ElementPath(path);
                 if (!list.Contains(path1)) {
                     error.Add($"Path '{path}' not exists!");
@@ -81,7 +81,7 @@ namespace Cobilas.CLI.ObjectiveList {
                 }
             using (XmlReader reader = XmlReader.Create(filePath)) {
                 byte r_status = (byte)(!string.IsNullOrEmpty(s_status) ? status ? 1 : 2 : 0);
-                ElementContainer.PrintElementContainer((ElementContainer)reader.GetElementTag(), r_status);
+                ElementContainer.PrintElementContainer((ElementContainer)reader.ReadXMLIRW(), r_status);
             }
             return true;
         }

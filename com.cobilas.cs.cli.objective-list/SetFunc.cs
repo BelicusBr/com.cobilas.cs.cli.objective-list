@@ -55,7 +55,7 @@ namespace Cobilas.CLI.ObjectiveList {
 
             ElementContainer list = null;
             using (XmlReader reader = XmlReader.Create(filePath)) {
-                list = (ElementContainer)reader.GetElementTag();
+                list = (ElementContainer)reader.ReadXMLIRW();
                 if (!list.Contains(new ElementPath(path))) {
                     error.Add($"Path '{path}' not exists!");
                     return false;
@@ -69,7 +69,7 @@ namespace Cobilas.CLI.ObjectiveList {
             using (FileStream file = File.Open(filePath, FileMode.OpenOrCreate)) {
                 file.SetLength(0L);
                 using (XmlWriter writer = XmlWriter.Create(file, settings)) {
-                    writer.WriteElementTag((ElementTag)list);
+                    writer.WriterXMLIRW((XMLIRWElement)list);
                     list.Dispose();
                 }
             }
@@ -94,7 +94,7 @@ namespace Cobilas.CLI.ObjectiveList {
 
             ElementContainer list = null;
             using (XmlReader reader = XmlReader.Create(filePath)) {
-                list = (ElementContainer)reader.GetElementTag();
+                list = (ElementContainer)reader.ReadXMLIRW();
                 if (!list.Contains(new ElementPath(path))) {
                     error.Add($"Path '{path}' not exists!");
                     return false;
@@ -108,7 +108,7 @@ namespace Cobilas.CLI.ObjectiveList {
             using (FileStream file = File.Open(filePath, FileMode.OpenOrCreate)) {
                 file.SetLength(0L);
                 using (XmlWriter writer = XmlWriter.Create(file, settings)) {
-                    writer.WriteElementTag((ElementTag)list);
+                    writer.WriterXMLIRW((XMLIRWElement)list);
                     list.Dispose();
                 }
             }
@@ -132,7 +132,7 @@ namespace Cobilas.CLI.ObjectiveList {
             } else if (bool.TryParse(newTitle, out bool result)) {
                 ElementContainer list = null;
                 using (XmlReader reader = XmlReader.Create(filePath)) {
-                    list = (ElementContainer)reader.GetElementTag();
+                    list = (ElementContainer)reader.ReadXMLIRW();
                     if (!list.Contains(new ElementPath(path))) {
                         error.Add($"Path '{path}' not exists!");
                         return false;
@@ -146,7 +146,7 @@ namespace Cobilas.CLI.ObjectiveList {
                 using (FileStream file = File.Open(filePath, FileMode.OpenOrCreate)) {
                     file.SetLength(0L);
                     using (XmlWriter writer = XmlWriter.Create(file, settings)) {
-                        writer.WriteElementTag((ElementTag)list);
+                        writer.WriterXMLIRW((XMLIRWElement)list);
                         list.Dispose();
                     }
                 }
@@ -179,7 +179,7 @@ namespace Cobilas.CLI.ObjectiveList {
 
             ElementContainer list = null;
             using (XmlReader reader = XmlReader.Create(filePath)) {
-                list = (ElementContainer)reader.GetElementTag();
+                list = (ElementContainer)reader.ReadXMLIRW();
                 if (!list.Contains(new ElementPath(path))) {
                     error.Add($"Path '{path}' not exists!");
                     return false;
@@ -195,7 +195,7 @@ namespace Cobilas.CLI.ObjectiveList {
             using (FileStream file = File.Open(filePath, FileMode.OpenOrCreate)) {
                 file.SetLength(0L);
                 using (XmlWriter writer = XmlWriter.Create(file, settings)) {
-                    writer.WriteElementTag((ElementTag)list);
+                    writer.WriterXMLIRW((XMLIRWElement)list);
                     list.Dispose();
                 }
             }
