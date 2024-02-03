@@ -3,6 +3,7 @@ using System.Xml;
 using System.Collections;
 using Cobilas.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Cobilas.CLI.ObjectiveList {
     internal class ElementContainer : IDisposable, IReadOnlyList<ElementItem>, IEnumerable<ElementItem> {
@@ -142,33 +143,32 @@ namespace Cobilas.CLI.ObjectiveList {
 
         private static void ElementTagToElementContainer(XMLIRWElement tag, ElementContainer container) {
             bool noVersion = false;
-            // tag.ForEach((XMLIRWAttribute E) => {
-            //     if (E.Name == "version")
-            //         switch (E.Value.ValueToString) {
-            //             case "2.0":
-            //                 noVersion = true;
-            //                 ElementTagToElementContainer2_0(tag, container);
-            //                 break;
-            //         }
-            // });
-            foreach (var item in tag)
-                if (item is XMLIRWAttribute attri && attri.Name == "version")
-                    switch ((string)attri.Value) {
-                        case "2.0":
-                            noVersion = true;
-                            ElementTagToElementContainer2_0(tag, container);
-                            break;
+            foreach (XMLIRW item in tag) {
+                if (item is XMLIRWElement element) {
+                    if (!element.NoAttributes)
+                        foreach (XMLIRWAttribute item2 in element.Attributes.Cast<XMLIRWAttribute>()) {
+                            if (item2 is XMLIRWAttribute attri && attri.Name == "version")
+                                switch ((string)attri.Text) {
+                                    case "2.0":
+                                        noVersion = true;
+                                        ElementTagToElementContainer2_0(element, container);
+                                        break;
+                                }
+                        }
+                    if (!noVersion) {
+                        ElementTagToElementContainer1_0(item as XMLIRWElement, container);
+                        break;
                     }
+                }
+            }
                     
-            if (!noVersion)
-                ElementTagToElementContainer1_0(tag, container);
         }
 
         private static void ElementTagToElementContainer1_0(XMLIRWElement tag, ElementContainer container) {
             foreach (XMLIRW e1 in tag) {
                 if (e1 is XMLIRWElement ele1 && ele1.Name == "element") {
                     ElementPath path = ElementPath.Empty;
-                    ElementPath parent = ElementPath.Empty;
+                    ElementPath parent;
                     bool status = false;
                     string title = string.Empty;
                     string description = string.Empty;
@@ -176,10 +176,10 @@ namespace Cobilas.CLI.ObjectiveList {
                         if (e2 is XMLIRWAttribute attri)
                             switch (attri.Name) {
                                 case "path":
-                                    path = new ElementPath(((string)attri.Value).Remove(0, 2));
+                                    path = new ElementPath(((string)attri.Text).Remove(0, 2));
                                     break;
                                 case "status":
-                                    status = Convert.ToBoolean(attri.Value);
+                                    status = Convert.ToBoolean(attri.Text);
                                     break;
                             }  
                     }
@@ -187,20 +187,24 @@ namespace Cobilas.CLI.ObjectiveList {
                         if (e3 is XMLIRWElement ele2)
                             switch (ele2.Name) {
                                 case "title":
-                                    title = (string)ele2.Value;
+                                    title = (string)ele2.Text;
                                     break;
                                 case "descriptio":
-                                    description = (string)ele2.Value;
+                                    description = (string)ele2.Text;
                                     break;
                             }  
                     }
                     parent = ElementPath.GetParent(path);
-                    if (parent == ElementPath.Root)
-                        container.Add(new ElementItem(status, title, description));
-                    else {
+                    if (parent == ElementPath.Root) {
+                        ElementItem element = new ElementItem(status, title, description);
+                        element.path = path;
+                        container.Add(element);
+                    } else {
                         if (container.Contains(path.Indexs)) {
                             ElementItem elementItem = container.GetElementItem(path.Indexs);
-                            elementItem.Add(new ElementItem(status, title, description));
+                            ElementItem element = new ElementItem(status, title, description);
+                            element.path = path;
+                            elementItem.Add(element);
                         }
                     }
                 }
@@ -253,7 +257,7 @@ namespace Cobilas.CLI.ObjectiveList {
                         if (e2 is XMLIRWAttribute attri)
                             switch (attri.Name) {
                                 case "path":
-                                    elementItem.path = new ElementPath((string)attri.Value);
+                                    elementItem.path = new ElementPath((string)attri.Text);
                                     ElementPath pathtemp = ElementPath.GetParent(elementItem.path);
                                     if (pathtemp == ElementPath.Root)
                                         container.Add(elementItem);
@@ -263,7 +267,7 @@ namespace Cobilas.CLI.ObjectiveList {
                                     }
                                     break;
                                     case "status":
-                                        elementItem.status = Convert.ToBoolean(attri.Value);
+                                        elementItem.status = Convert.ToBoolean(attri.Text);
                                         break;
                             }
                     }
@@ -271,13 +275,13 @@ namespace Cobilas.CLI.ObjectiveList {
                         if (e3 is XMLIRWElement ele2)
                             switch (ele2.Name) {
                                 case "title":
-                                    elementItem.title = (string)ele2.Value;
+                                    elementItem.title = (string)ele2.Text;
                                     break;
                                 case "descriptio":
-                                    elementItem.description = (string)ele2.Value;
+                                    elementItem.description = (string)ele2.Text;
                                     break;
                                 case "element":
-                                    ElementTagToElementContainer2_0(ele2, container);
+                                    ElementTagToElementContainer2_0(ele1, container);
                                     break;
                             }
                     }

@@ -81,7 +81,8 @@ namespace Cobilas.CLI.ObjectiveList {
                 }
             using (XmlReader reader = XmlReader.Create(filePath)) {
                 byte r_status = (byte)(!string.IsNullOrEmpty(s_status) ? status ? 1 : 2 : 0);
-                ElementContainer.PrintElementContainer((ElementContainer)reader.ReadXMLIRW(), r_status);
+                XMLIRWElement element = reader.ReadXMLIRW();
+                ElementContainer.PrintElementContainer((ElementContainer)element, r_status);
             }
             return true;
         }
