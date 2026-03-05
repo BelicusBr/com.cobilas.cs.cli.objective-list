@@ -1,30 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
-    <RootNamespace>Cobilas.CLI.ObjectiveList</RootNamespace>
-    <AssemblyName>objelist</AssemblyName>
-    <RepositoryType>git</RepositoryType>
-    <PackageTags>CSharp</PackageTags>
-    <PackageId>Cobilas.CLI.ObjectiveList</PackageId>
-    <Authors>Cobilas</Authors>
-    <Product>Cobilas.CLI.ObjectiveList</Product>
-    <Version>3.0.0</Version>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net6.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <LangVersion>default</LangVersion>
+		<RootNamespace>Cobilas.CLI.ObjectiveList</RootNamespace>
+		<AssemblyName>objelist</AssemblyName>
+		<RepositoryType>git</RepositoryType>
+		<PackageTags>CSharp</PackageTags>
+		<PackageId>Cobilas.CLI.ObjectiveList</PackageId>
+		<Authors>Cobilas</Authors>
+		<Product>Cobilas.CLI.ObjectiveList</Product>
+		<Version>3.0.0</Version>
+		<AssemblyVersion>$(Version)</AssemblyVersion>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <NoWarn>1701;1702;IDE0090;IDE0017;IDE1006;IDE0056</NoWarn>
-    <OutputPath>bin\Debug\</OutputPath>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<NoWarn>1701;1702;IDE0090;IDE0017;IDE1006;IDE0056</NoWarn>
+		<OutputPath>bin\Debug\</OutputPath>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="CLIBase.cs~RF1973ae29.TMP" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Cobilas.CLI.Manager" Version="2.0.1" />
-    <PackageReference Include="Cobilas.Core.Net4x" Version="2.9.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Cobilas.CLI.Manager" Version="2.0.2" />
+		<PackageReference Include="Cobilas.Core.Net4x" Version="2.9.0" />
+	</ItemGroup>
 
 </Project>

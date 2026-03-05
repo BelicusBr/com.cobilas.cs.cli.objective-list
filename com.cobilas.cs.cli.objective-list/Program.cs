@@ -2,6 +2,7 @@
 using System.Text;
 using Cobilas.Collections;
 using Cobilas.CLI.Manager;
+using System.Collections.Generic;
 
 namespace Cobilas.CLI.ObjectiveList; 
 internal class Program {
@@ -25,52 +26,57 @@ internal class Program {
 	 *root --element/-e --help/-h
 	 *root set --help/-h
 	 */
+	/* id das funções
+	 * 0 => default value
+	 * 1 => treated value for arguments
+	 * 2 => analyzer for arguments
+	 * 3 => invalid argument
+	 */
 	public const string version = "3.0.0";
 	internal static string BaseDirectory => Environment.CurrentDirectory;
 	internal static string FriendlyName => AppDomain.CurrentDomain.FriendlyName;
 
 	static void Main(string[] args) {
+		CLIParse.EndCode = (long)TaskListTokens.EndCode;
+		CLIParse.ArgumentCode = (long)TaskListTokens.Argument;
 
-		ErrorMensager error = new ErrorMensager();
-		CLIArgCollection collection = new CLIArgCollection();
-		CLICommand root = CLIBase.Create();
-		try {
-			if (ArrayManipulation.EmpytArray(args))
-				PrintError("Enter some argument.");
+		CLIParse.AddToken((long)TaskListTokens.Function,
+			"--version", "-v",
+			"help", "-h", "-?",
+			"--rename", "-r",
+			"init", "-i",
+			"--show", "-s",
+			"--element", "-e",
+			"--clear", "-c",
+			"set"
+		);
+		CLIParse.AddToken((long)TaskListTokens.Option,
+			"--item", "--i",
+			"--path", "-p",
+			"--list", "-l",
+			"add",
+			"remove",
+			"--title", "-t",
+			"--description", "-d",
+			"--replacetile", "-rt",
+			"--replacedesc", "-rd",
+			"--replacestatus", "-rs",
+			"--status", "--s",
+			"--move", "-m",
+			"--moveto", "-mt"
+		);
+		CLIParse.AddToken((long)(TaskListTokens.Option | TaskListTokens.EndCode),
+			"-help",
+			"--h", 
+			"--?"
+		);
 
-			if (CLICommand.Cateter(new StringArrayToIEnumerator(args), root, collection, error, out int funcID)) {
-				if (funcID == 0)
-					PrintError($"Command '{JoinArgs(args)}' not found.");
-				else if (!FuncHub.Invok(funcID, error, collection))
-					PrintError(error);
-			} else PrintError(error);
+		TokenList list = new(CLIParse.Parse(args));
+		list.Move();
 
-		} catch {
-			collection.Clear();
-			root.Dispose();
-
-			throw;
+		while (list.CurrentIndex < list.Count) {
+			KeyValuePair<string, long> temp = list.GetValueAndMove;
+			Console.WriteLine($"[{temp.Key}, {(TaskListTokens)temp.Value}]");
 		}
-
-		collection.Clear();
-		root.Dispose();
-		GC.Collect();
 	}
-
-	static string JoinArgs(string[] args) {
-		StringBuilder builder = new StringBuilder();
-		for (int I = 0; I < args.Length; I++)
-			builder.AppendFormat("{0} ", args[I]);
-		return builder.ToString().TrimEnd();
-	}
-
-	static void PrintError(ErrorMensager msm) {
-		StringBuilder builder = new StringBuilder();
-		foreach (var item in msm)
-			builder.AppendLine(item);
-		PrintError(builder.ToString());
-	}
-
-	static void PrintError(string msm)
-		=> throw new TaskListException(msm);
 }

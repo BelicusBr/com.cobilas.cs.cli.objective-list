@@ -1,4 +1,5 @@
-﻿using Cobilas.CLI.Manager;
+﻿#if false
+using Cobilas.CLI.Manager;
 
 namespace Cobilas.CLI.ObjectiveList {
     internal struct CLIBase {
@@ -90,3 +91,4 @@ namespace Cobilas.CLI.ObjectiveList {
                 );
     }
 }
+#endif

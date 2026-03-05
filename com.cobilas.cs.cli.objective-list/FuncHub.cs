@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if false
+using System;
 using Cobilas.CLI.Manager;
 using System.Collections.Generic;
 
@@ -23,3 +24,4 @@ namespace Cobilas.CLI.ObjectiveList {
         }
     }
 }
+#endif

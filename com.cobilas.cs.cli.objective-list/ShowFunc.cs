@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if false
+using System;
 using System.IO;
 using System.Xml;
 using System.Collections;
@@ -88,3 +89,4 @@ namespace Cobilas.CLI.ObjectiveList {
         }
     }
 }
+#endif
