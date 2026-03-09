@@ -2,17 +2,19 @@
 using Cobilas.CLI.Manager;
 using System.Collections.Generic;
 using Cobilas.CLI.Manager.Interfaces;
+using Cobilas.CLI.ObjectiveList.Interfaces;
 
 namespace Cobilas.CLI.ObjectiveList.Elements;
 
-public readonly struct TaskListOption : IOption {
-	public List<IArgument>? Options => throw new NotImplementedException();
+public readonly struct TaskListOption(string? alias, bool mandatory, params IArgument[]? arguments) : IOption, ITypeCode {
+	private readonly bool mandatory = mandatory;
+	private readonly CLIKey alias = alias ?? throw new ArgumentNullException(nameof(alias));
+	private readonly List<IArgument> arguments = [.. arguments ?? throw new ArgumentNullException(nameof(arguments))];
 
-	public bool Mandatory => throw new NotImplementedException();
-
-	public string Alias => throw new NotImplementedException();
-
-	public long TypeCode => throw new NotImplementedException();
+	public string Alias => alias;
+	public bool Mandatory => mandatory;
+	public List<IArgument>? Options => arguments;
+	public long TypeCode => (long)TaskListTokens.Option;
 
 	public bool Analyzer(TokenList? list, ErrorMessage? message)
 	{
@@ -38,4 +40,9 @@ public readonly struct TaskListOption : IOption {
 	{
 		throw new NotImplementedException();
 	}
+
+	public bool IsTypeCode(long typeCode) => IsTypeCode((TaskListTokens)typeCode);
+
+	public bool IsTypeCode(TaskListTokens typeCode)
+		=> ((TaskListTokens)TypeCode).HasFlag(typeCode);
 }

@@ -2,12 +2,13 @@
 using Cobilas.CLI.Manager;
 using System.Collections.Generic;
 using Cobilas.CLI.Manager.Interfaces;
+using Cobilas.CLI.ObjectiveList.Interfaces;
 
 namespace Cobilas.CLI.ObjectiveList.Elements;
 
-public readonly struct TaskListArgument(string? alias, bool mandatory) : IArgument {
-	private readonly CLIKey alias = alias ?? throw new ArgumentNullException(nameof(alias));
+public readonly struct TaskListArgument(string? alias, bool mandatory) : IArgument, ITypeCode {
 	private readonly bool mandatory = mandatory;
+	private readonly CLIKey alias = GetAlias(alias);
 
 	public string Alias => alias;
 	public bool Mandatory => mandatory;
@@ -39,9 +40,7 @@ public readonly struct TaskListArgument(string? alias, bool mandatory) : IArgume
 		if (tokens.HasFlag(TaskListTokens.Option)) { }
 		else if (tokens.HasFlag(TaskListTokens.Function)) { }
 		else if (tokens.HasFlag(TaskListTokens.EndCode)) { }
-		else {
-			CLIParse.GetFunction<Action<CLIKey, KeyValuePair<string, long>, ErrorMessage>>(3u)(alias, value, message);
-		}
+		else CLIParse.GetFunction<Action<CLIKey, KeyValuePair<string, long>, ErrorMessage>>(3u)(alias, value, message);
 	}
 
 	public bool IsAlias(string? alias) {
@@ -51,4 +50,14 @@ public readonly struct TaskListArgument(string? alias, bool mandatory) : IArgume
 
 	public void TreatedValue(CLIValueOrder? valueOrder, TokenList? list)
 		=> CLIParse.GetFunction<Action<CLIValueOrder?, TokenList?>>(1u)(valueOrder, list);
+
+	public bool IsTypeCode(long typeCode) => IsTypeCode((TaskListTokens)typeCode);
+
+	public bool IsTypeCode(TaskListTokens typeCode)
+		=> ((TaskListTokens)TypeCode).HasFlag(typeCode);
+
+	private static string GetAlias(string? alias) {
+		ExceptionMessages.ThrowIfNullOrEmpty(alias, nameof(alias));
+		return $"{{ARG}}/{alias}";
+	}
 }

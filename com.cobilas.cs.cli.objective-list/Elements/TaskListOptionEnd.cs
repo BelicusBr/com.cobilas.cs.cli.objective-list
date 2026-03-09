@@ -2,10 +2,11 @@
 using Cobilas.CLI.Manager;
 using System.Collections.Generic;
 using Cobilas.CLI.Manager.Interfaces;
+using Cobilas.CLI.ObjectiveList.Interfaces;
 
 namespace Cobilas.CLI.ObjectiveList.Elements;
 
-public readonly struct TaskListOptionEnd : IOptionFunc {
+public readonly struct TaskListOptionEnd : IOptionFunc, ITypeCode {
 	public bool Mandatory => throw new NotImplementedException();
 
 	public string Alias => throw new NotImplementedException();
@@ -36,4 +37,9 @@ public readonly struct TaskListOptionEnd : IOptionFunc {
 	{
 		throw new NotImplementedException();
 	}
+
+	public bool IsTypeCode(long typeCode) => IsTypeCode((TaskListTokens)typeCode);
+
+	public bool IsTypeCode(TaskListTokens typeCode)
+		=> ((TaskListTokens)TypeCode).HasFlag(typeCode);
 }
