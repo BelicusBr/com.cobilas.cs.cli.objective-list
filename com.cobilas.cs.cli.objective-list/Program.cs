@@ -1,11 +1,9 @@
-﻿using Cobilas.CLI.Manager;
+﻿using System;
+using System.Reflection;
+using Cobilas.CLI.Manager;
 using Cobilas.CLI.Manager.Interfaces;
 using Cobilas.CLI.ObjectiveList.Elements;
 using Cobilas.CLI.ObjectiveList.FuncHub;
-using Cobilas.Collections;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Cobilas.CLI.ObjectiveList; 
 internal class Program {
@@ -37,17 +35,27 @@ internal class Program {
 	 * 4 => generic function
 	 * 6 => option argument name
 	 */
-	public const string version = "3.0.0";
+	internal static string version {
+		get {
+			Version? entryVersion = Assembly.GetEntryAssembly()?.GetName().Version;
+			return entryVersion?.ToString() ?? "Unknown";
+		}
+	}
 	internal static string BaseDirectory => Environment.CurrentDirectory;
 	internal static string FriendlyName => AppDomain.CurrentDomain.FriendlyName;
 
-	static void Main(string[] args) {
+	private static void Main(string[] args) {
+
 		CLIParse.EndCode = (long)TaskListTokens.EndCode;
 		CLIParse.ArgumentCode = (long)TaskListTokens.Argument;
 
 		CLIParse.AddFunction(0u, GlobalFunctionHub.DefaultValue);
 		CLIParse.AddFunction(1u, GlobalFunctionHub.TreatedValue);
-		CLIParse.AddFunction(4u, Func);
+		CLIParse.AddFunction(2u, GlobalFunctionHub.AnalyzerArguments);
+		CLIParse.AddFunction(3u, GlobalFunctionHub.InvalidArgument);
+		CLIParse.AddFunction(4u, GlobalFunctionHub.GenericFunction);
+
+		UniFunctions.InitFunctions();
 
 		CLIParse.AddToken((long)TaskListTokens.Function,
 			"--version", "-v",
@@ -78,54 +86,111 @@ internal class Program {
 			"--h", 
 			"--?"
 		);
-
+		/* Poderia tratar as opções das funções como uma lista em vez de lista e sublista
+		 * Antiga forma
+		 * --rename/-r
+		 * |-> -help/--h/--?
+		 * |-> --replacename/-rn
+		 * |   |-> rm-rpn-fln-arg
+		 * |   |-> rm-rpn-nfln-arg
+		 * |-> rm-arg
+		 * Nova forma
+		 * --rename/-r
+		 * |-> -help/--h/--?
+		 * |-> --replacename/-rn
+		 * |-> rm-rpn-fln-arg
+		 * |-> rm-rpn-nfln-arg
+		 * |-> rm-arg
+		 */
 		IFunction[] functions = {
-			new TaskListFunction("--version/-v"),
+			new TaskListFunction("--version/-v", new TaskListOptionEnd("-help/--h/--?", false)),
 			new TaskListFunction("help/-h/-?"),
-			new TaskListFunction("--rename/-r"),
-			new TaskListFunction("init/-i"),
-			new TaskListFunction("--show/-s"),
-			new TaskListFunction("--clear/-c"),
-			new TaskListFunction("--element/-e"),
-			new TaskListFunction("set"),
+			new TaskListFunction("--rename/-r",
+				new TaskListOptionEnd("-help/--h/--?", false),
+				new TaskListOption("--replacename/-rn", false, 
+					new TaskListArgument("rm-rpn-fln-arg"),
+					new TaskListArgument("rm-rpn-nfln-arg")
+				),
+				new TaskListArgument("rm-arg")
+			),
+			new TaskListFunction("init/-i",
+				new TaskListOptionEnd("-help/--h/--?", false),
+				new TaskListArgument("it-arg", false)
+			),
+			new TaskListFunction("--show/-s",
+				new TaskListOptionEnd("-help/--h/--?", false),
+				new TaskListSubFunction("--item/--i", false,
+					new TaskListOption("--path/-p",
+						new TaskListArgument("it-ph-arg")
+					)
+				),
+				new TaskListOption("--list/-l", false),
+				new TaskListArgument("sw-arg", false)
+			),
+			new TaskListFunction("--clear/-c",
+				new TaskListOptionEnd("-help/--h/--?", false),
+				new TaskListArgument("clr-arg", false)
+			),
+			new TaskListFunction("--element/-e",
+				new TaskListOptionEnd("-help/--h/--?", false),
+				new TaskListSubFunction("add", false,
+					new TaskListOption("--path/-p", false, new TaskListArgument("emt-a-ph-arg")),
+					new TaskListOption("--title/-t", new TaskListArgument("emt-a-tt-arg")),
+					new TaskListOption("--description/-d", false, new TaskListArgument("emt-a-dt-arg"))
+				),
+				new TaskListSubFunction("remove", false,
+					new TaskListOption("--path/-p", new TaskListArgument("emt-r-ph-arg"))
+				),
+				new TaskListArgument("emt-arg", false)
+			),
+			new TaskListFunction("set",
+				new TaskListOptionEnd("-help/--h/--?", false),
+				new TaskListSubFunction("--replace/-rp", false,
+					new TaskListOption("--path/-p", new TaskListArgument("st-r-ph-arg")),
+					new TaskListOption("--title/-t", false, new TaskListArgument("emt-r-tt-arg")),
+					new TaskListOption("--description/-d", false, new TaskListArgument("emt-r-dt-arg")),
+					new TaskListOption("--status/--s", false, new TaskListArgument("emt-r-stt-arg"))
+				),
+				new TaskListSubFunction("--move/-m", false,
+					new TaskListOption("--path/-p", new TaskListArgument("st-m-ph-arg"))
+				),
+				new TaskListArgument("st-arg", false)
+			),
 		};
 
 		TokenList list = new(CLIParse.Parse(args));
 		ErrorMessage message = new();
 		list.Move();
+		bool runFunction = false;
 
 		foreach (IFunction item in functions) {
 			if (!item.IsAlias(list.CurrentKey)) continue;
+			TaskDebug.Print($"{item.Alias}|{list.CurrentKey}");
 			if (item.Analyzer(list, message)) {
 				Console.WriteLine(message);
 				return;
 			}
 			list.Reset();
-			list.Move(2);
+			list.Move();
 			if (item.GetValues(list, message)) {
 				Console.WriteLine(message);
 				return;
 			}
 
 			item.Run();
+			runFunction = true;
 		}
 
-		while (list.CurrentIndex < list.Count) {
-			KeyValuePair<string, long> temp = list.GetValueAndMove;
-			Console.WriteLine($"[{temp.Key}, {(TaskListTokens)temp.Value}]");
+		if (!runFunction) {
+			if (list.CurrentValue == (long)TaskListTokens.EndCode)
+				Console.WriteLine($"Nenhuma função foi chamado!!!");
+			else Console.WriteLine($"Elemento '{list.CurrentKey}' não identificado!!!");
+			CLIParse.GetFunction<Action<CLIKey, CLIValueOrder?>>(4)("-h", null);
 		}
+
+		TaskDebug.Print(list);
 
 		GlobalFunctionHub.ClearEvents();
 		GC.Collect();
-	}
-
-	static void Func(CLIKey alis, CLIValueOrder? order) {
-		if (alis == (CLIKey)"--version/-v") {
-			Console.WriteLine($"{nameof(version)}: {version}");
-		} else if (alis == (CLIKey)"--help/-h") {
-			Console.WriteLine("Commands:");
-			Console.WriteLine("\t--version/-v");
-			Console.WriteLine("\t--help/-h");
-		}
 	}
 }

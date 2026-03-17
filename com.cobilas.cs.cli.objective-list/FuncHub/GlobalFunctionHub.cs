@@ -1,21 +1,44 @@
 ﻿using System;
 using Cobilas.CLI.Manager;
+using System.Collections.Generic;
 
 namespace Cobilas.CLI.ObjectiveList.FuncHub;
 
-public static class GlobalFunctionHub {
+internal static class GlobalFunctionHub {
 
-	public static event Action<CLIValueOrder?>? EventDefaultValue;
-	public static event Action<CLIValueOrder?, TokenList?>? EventTreatedValue;
+	internal static event Func<string?, bool>? EventAnalyzerArguments;
+	internal static event Action<CLIKey, CLIValueOrder?>? EventDefaultValue;
+	internal static event Func<CLIKey, int, string?>? EventOptionArgumentName;
+	internal static event Action<CLIKey, CLIValueOrder?>? EventGenericFunction;
+	internal static event Action<CLIKey, CLIValueOrder?, TokenList?>? EventTreatedValue;
+	internal static event Action<CLIKey, KeyValuePair<string, long>, ErrorMessage?>? EventInvalidArgument;
 
-	public static void DefaultValue(CLIValueOrder? valueOrder)
-		=> EventDefaultValue?.Invoke(valueOrder);
+	internal static void DefaultValue(CLIKey alias, CLIValueOrder? valueOrder)
+		=> EventDefaultValue?.Invoke(alias, valueOrder);
 
-	public static void TreatedValue(CLIValueOrder? valueOrder, TokenList? list)
-		=> EventTreatedValue?.Invoke(valueOrder, list);
+	internal static void TreatedValue(CLIKey alias, CLIValueOrder? valueOrder, TokenList? list)
+		=> EventTreatedValue?.Invoke(alias, valueOrder, list);
 
-	public static void ClearEvents() {
+	internal static bool AnalyzerArguments(string? value) {
+		if (EventAnalyzerArguments is null) return false;
+		return EventAnalyzerArguments(value);
+	}
+
+	internal static void GenericFunction(CLIKey alis, CLIValueOrder? order)
+		=> EventGenericFunction?.Invoke(alis, order);
+
+	internal static void InvalidArgument(CLIKey alias, KeyValuePair<string, long> value, ErrorMessage? message)
+		=> EventInvalidArgument?.Invoke(alias, value, message);
+
+	internal static string? OptionArgumentName(CLIKey alias, int index)
+		=> EventOptionArgumentName?.Invoke(alias, index);
+
+	internal static void ClearEvents() {
 		EventDefaultValue = null;
 		EventTreatedValue = null;
+		EventGenericFunction = null;
+		EventInvalidArgument = null;
+		EventAnalyzerArguments = null;
+		EventOptionArgumentName = null;
 	}
 }

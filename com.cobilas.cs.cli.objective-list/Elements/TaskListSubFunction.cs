@@ -22,29 +22,29 @@ public readonly struct TaskListSubFunction(string? alias, bool mandatory, params
 	public bool Analyzer(TokenList? list, ErrorMessage? message) {
 		ExceptionMessages.ThrowIfNull(list, nameof(list));
 		ExceptionMessages.ThrowIfNull(message, nameof(message));
-		list.Move();
 		TaskListTokens tokens;
+		list.Move();
 		for (int I = 0; I < options.Count; I++) {
 			IOptionFunc opc = options[I];
 			tokens = (TaskListTokens)list.CurrentValue;
+			TaskDebug.Print($"[TLSF]{opc.Alias}|{list.CurrentKey}|{tokens}");
 			if (opc.IsAlias(list.CurrentKey)) {
 				if (opc.Analyzer(list, message))
 					return true;
 				else {
-					if (tokens.HasFlag(TaskListTokens.EndCode)) {
-						list.Move();
+					if (tokens.HasFlag(TaskListTokens.EndCode))
 						break;
-					}
 				}
-				break;
 			}
 		}
 
 		tokens = (TaskListTokens)list.CurrentValue;
+		TaskDebug.Print($"[P-TLSF]{list.CurrentKey}|{tokens}");
 		if (!tokens.HasFlag(TaskListTokens.EndCode)) {
 			((IOptionFunc)this).ExceptionMessage(list.Current, message);
 			return true;
 		}
+		TaskDebug.Print($"[TLSF]{list.CurrentKey}|{tokens}");
 		return false;
 	}
 
@@ -56,8 +56,8 @@ public readonly struct TaskListSubFunction(string? alias, bool mandatory, params
 			IOptionFunc of = options[I];
 			if (of.AliasIsTypeCode(list.CurrentValue)) {
 				if (of.IsAlias(list.CurrentKey) || of.IsAlias("{ARG}")) {
-					of.TreatedValue(valueOrder, list);
 					list.Move();
+					of.TreatedValue(valueOrder, list);
 				}
 			} else {
 				if (of.Mandatory) {
@@ -72,7 +72,7 @@ public readonly struct TaskListSubFunction(string? alias, bool mandatory, params
 
 	public bool IsAlias(string? alias) {
 		ExceptionMessages.ThrowIfNull(alias, nameof(alias));
-		return this.alias == alias;
+		return this.alias == (CLIKey)alias;
 	}
 
 	public bool IsTypeCode(long typeCode) => IsTypeCode((TaskListTokens)typeCode);
@@ -81,18 +81,18 @@ public readonly struct TaskListSubFunction(string? alias, bool mandatory, params
 		=> ((TaskListTokens)TypeCode).HasFlag(typeCode);
 
 	void IOptionFunc.DefaultValue(CLIValueOrder? valueOrder)
-		=> CLIParse.GetFunction<Action<CLIValueOrder?>>(0u)(valueOrder);
+		=> CLIParse.GetFunction<Action<CLIKey, CLIValueOrder?>>(0u)(alias, valueOrder);
 
 	void IOptionFunc.TreatedValue(CLIValueOrder? valueOrder, TokenList? list) {
 		ExceptionMessages.ThrowIfNull(list, nameof(list));
 		ExceptionMessages.ThrowIfNull(valueOrder, nameof(valueOrder));
 
-		Func<CLIKey, int, string> optionArgName = CLIParse.GetFunction<Func<CLIKey, int, string>>(6u);
+		Func<CLIKey, int, string?> optionArgName = CLIParse.GetFunction<Func<CLIKey, int, string?>>(6u);
 
 		if (options is not null)
 			for (int I = 0; I < options.Count; I++) {
 				KeyValuePair<string, long> temp = list.GetValueAndMove;
-				string name = optionArgName(alias, I);
+				string name = optionArgName(alias, I) ?? "{none-name}";
 				valueOrder.Add(name, temp.Key);
 			}
 	}

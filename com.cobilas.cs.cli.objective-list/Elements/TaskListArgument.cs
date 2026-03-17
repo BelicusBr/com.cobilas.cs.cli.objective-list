@@ -19,7 +19,8 @@ public readonly struct TaskListArgument(string? alias, bool mandatory) : IArgume
 	public bool Analyzer(TokenList? list, ErrorMessage? message) {
 		ExceptionMessages.ThrowIfNull(list, nameof(list));
 		ExceptionMessages.ThrowIfNull(message, nameof(message));
-		Func<string, bool> analyzer_arg = CLIParse.GetFunction<Func<string, bool>>(2u);
+		Func<string?, bool> analyzer_arg = CLIParse.GetFunction<Func<string?, bool>>(2u);
+		TaskDebug.Print($"[TLA]{list.CurrentKey}|{(TaskListTokens)list.CurrentValue}");
 		if (list.CurrentValue != TypeCode) {
 			if (!mandatory) return false;
 			ExceptionMessage(list.Current, message);
@@ -28,11 +29,13 @@ public readonly struct TaskListArgument(string? alias, bool mandatory) : IArgume
 			ExceptionMessage(list.Current, message);
 			return true;
 		}
+		list.Move();
+		TaskDebug.Print($"[TLA]{list.CurrentKey}|{(TaskListTokens)list.CurrentValue}");
 		return false;
 	}
 
 	public void DefaultValue(CLIValueOrder? valueOrder)
-		=> CLIParse.GetFunction<Action<CLIValueOrder?>>(0u)(valueOrder);
+		=> CLIParse.GetFunction<Action<CLIKey, CLIValueOrder?>>(0u)(alias, valueOrder);
 
 	public void ExceptionMessage(KeyValuePair<string, long> value, ErrorMessage? message) {
 		ExceptionMessages.ThrowIfNull(message, nameof(message));
@@ -40,16 +43,19 @@ public readonly struct TaskListArgument(string? alias, bool mandatory) : IArgume
 		if (tokens.HasFlag(TaskListTokens.Option)) { }
 		else if (tokens.HasFlag(TaskListTokens.Function)) { }
 		else if (tokens.HasFlag(TaskListTokens.EndCode)) { }
-		else CLIParse.GetFunction<Action<CLIKey, KeyValuePair<string, long>, ErrorMessage>>(3u)(alias, value, message);
+		else CLIParse.GetFunction<Action<CLIKey, KeyValuePair<string, long>, ErrorMessage?>>(3u)(alias, value, message);
 	}
 
 	public bool IsAlias(string? alias) {
 		ExceptionMessages.ThrowIfNullOrEmpty(alias, nameof(alias));
-		return this.alias == alias;
+		return this.alias == (CLIKey)alias;
 	}
 
-	public void TreatedValue(CLIValueOrder? valueOrder, TokenList? list)
-		=> CLIParse.GetFunction<Action<CLIValueOrder?, TokenList?>>(1u)(valueOrder, list);
+	public void TreatedValue(CLIValueOrder? valueOrder, TokenList? list) {
+		ExceptionMessages.ThrowIfNull(list, nameof(list));
+		list.Move();
+		CLIParse.GetFunction<Action<CLIKey, CLIValueOrder?, TokenList?>>(1u)(alias, valueOrder, list);
+	}
 
 	public bool IsTypeCode(long typeCode) => IsTypeCode((TaskListTokens)typeCode);
 
