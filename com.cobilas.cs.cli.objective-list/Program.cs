@@ -49,13 +49,9 @@ internal class Program {
 		CLIParse.EndCode = (long)TaskListTokens.EndCode;
 		CLIParse.ArgumentCode = (long)TaskListTokens.Argument;
 
-		CLIParse.AddFunction(0u, GlobalFunctionHub.DefaultValue);
-		CLIParse.AddFunction(1u, GlobalFunctionHub.TreatedValue);
-		CLIParse.AddFunction(2u, GlobalFunctionHub.AnalyzerArguments);
-		CLIParse.AddFunction(3u, GlobalFunctionHub.InvalidArgument);
-		CLIParse.AddFunction(4u, GlobalFunctionHub.GenericFunction);
-
-		UniFunctions.InitFunctions();
+		UniFunctions.Start();
+		RenameFunctions.Start();
+		InitFunction.Start();
 
 		CLIParse.AddToken((long)TaskListTokens.Function,
 			"--version", "-v",
@@ -86,77 +82,86 @@ internal class Program {
 			"--h", 
 			"--?"
 		);
-		/* Poderia tratar as opções das funções como uma lista em vez de lista e sublista
-		 * Antiga forma
-		 * --rename/-r
-		 * |-> -help/--h/--?
-		 * |-> --replacename/-rn
-		 * |   |-> rm-rpn-fln-arg
-		 * |   |-> rm-rpn-nfln-arg
-		 * |-> rm-arg
-		 * Nova forma
-		 * --rename/-r
-		 * |-> -help/--h/--?
-		 * |-> --replacename/-rn
-		 * |-> rm-rpn-fln-arg
-		 * |-> rm-rpn-nfln-arg
-		 * |-> rm-arg
-		 */
-		IFunction[] functions = {
-			new TaskListFunction("--version/-v", new TaskListOptionEnd("-help/--h/--?", false)),
-			new TaskListFunction("help/-h/-?"),
-			new TaskListFunction("--rename/-r",
-				new TaskListOptionEnd("-help/--h/--?", false),
-				new TaskListOption("--replacename/-rn", false, 
-					new TaskListArgument("rm-rpn-fln-arg"),
-					new TaskListArgument("rm-rpn-nfln-arg")
-				),
-				new TaskListArgument("rm-arg")
+
+		IFunction[] functions = [
+			ElementFactory.CreatFunction("--version/-v",
+				ElementFactory.CreateOptionEnd("-help/--h/--?", mandatory:false)
 			),
-			new TaskListFunction("init/-i",
-				new TaskListOptionEnd("-help/--h/--?", false),
-				new TaskListArgument("it-arg", false)
+			ElementFactory.CreatFunction("help/-h/-?"),
+			ElementFactory.CreatFunction("--rename/-r",
+				ElementFactory.CreateOptionEnd("-help/--h/--?", mandatory:false),
+				ElementFactory.CreatArgument("{105}arg"),
+				ElementFactory.CreatArgument("{106}arg"),
+				ElementFactory.CreatArgument("{107}arg", false)
 			),
-			new TaskListFunction("--show/-s",
-				new TaskListOptionEnd("-help/--h/--?", false),
-				new TaskListSubFunction("--item/--i", false,
-					new TaskListOption("--path/-p",
-						new TaskListArgument("it-ph-arg")
-					)
-				),
-				new TaskListOption("--list/-l", false),
-				new TaskListArgument("sw-arg", false)
+			ElementFactory.CreatFunction("init/-i",
+				ElementFactory.CreateOptionEnd("-help/--h/--?", mandatory:false),
+				ElementFactory.CreatArgument("{111}arg", false)
 			),
-			new TaskListFunction("--clear/-c",
-				new TaskListOptionEnd("-help/--h/--?", false),
-				new TaskListArgument("clr-arg", false)
+			ElementFactory.CreatFunction("--show/-s",
+				ElementFactory.CreateOptionEnd("-help/--h/--?", mandatory:false),
+				ElementFactory.CreateOptionJump("--item/--i", false, 2),
+				ElementFactory.CreateOptionJump("--path/-p"),
+				ElementFactory.CreatArgument("{121}arg"),
+				ElementFactory.CreateOptionJump("--list/-l", false),
+				ElementFactory.CreatArgument("{122}arg", false)
 			),
-			new TaskListFunction("--element/-e",
-				new TaskListOptionEnd("-help/--h/--?", false),
-				new TaskListSubFunction("add", false,
-					new TaskListOption("--path/-p", false, new TaskListArgument("emt-a-ph-arg")),
-					new TaskListOption("--title/-t", new TaskListArgument("emt-a-tt-arg")),
-					new TaskListOption("--description/-d", false, new TaskListArgument("emt-a-dt-arg"))
-				),
-				new TaskListSubFunction("remove", false,
-					new TaskListOption("--path/-p", new TaskListArgument("emt-r-ph-arg"))
-				),
-				new TaskListArgument("emt-arg", false)
+			ElementFactory.CreatFunction("--clear/-c",
+				ElementFactory.CreateOptionEnd("-help/--h/--?", mandatory:false),
+				ElementFactory.CreatArgument("{131}arg", false)
 			),
-			new TaskListFunction("set",
-				new TaskListOptionEnd("-help/--h/--?", false),
-				new TaskListSubFunction("--replace/-rp", false,
-					new TaskListOption("--path/-p", new TaskListArgument("st-r-ph-arg")),
-					new TaskListOption("--title/-t", false, new TaskListArgument("emt-r-tt-arg")),
-					new TaskListOption("--description/-d", false, new TaskListArgument("emt-r-dt-arg")),
-					new TaskListOption("--status/--s", false, new TaskListArgument("emt-r-stt-arg"))
-				),
-				new TaskListSubFunction("--move/-m", false,
-					new TaskListOption("--path/-p", new TaskListArgument("st-m-ph-arg"))
-				),
-				new TaskListArgument("st-arg", false)
+			ElementFactory.CreatFunction("--element/-e",
+				ElementFactory.CreateOptionEnd("-help/--h/--?", mandatory:false),
+				//add function
+				ElementFactory.CreateOptionJump("add", false, 6),
+				ElementFactory.CreateOptionJump("--path/-p", false, 1),
+				ElementFactory.CreatArgument("{141}arg"),
+				ElementFactory.CreateOption("--title/-t"),
+				ElementFactory.CreatArgument("{142}arg"),
+				ElementFactory.CreateOptionJump("--description/-d", false, 1),
+				ElementFactory.CreatArgument("{143}arg"),
+				//remove function
+				ElementFactory.CreateOptionJump("remove", false, 2),
+				ElementFactory.CreateOption("--path/-p"),
+				ElementFactory.CreatArgument("{144}arg"),
+				//element argument
+				ElementFactory.CreatArgument("{145}arg", false)
 			),
-		};
+			ElementFactory.CreatFunction("set",
+				ElementFactory.CreateOptionEnd("-help/--h/--?", mandatory:false),
+				//replace function
+				ElementFactory.CreateOptionJump("--replace/-rp", false, 8),
+				ElementFactory.CreateOption("--path/-p"),
+				ElementFactory.CreatArgument("{141}arg"),
+				ElementFactory.CreateOptionJump("--title/-t", false, 1),
+				ElementFactory.CreatArgument("{142}arg"),
+				ElementFactory.CreateOptionJump("--description/-d", false, 1),
+				ElementFactory.CreatArgument("{143}arg"),
+				ElementFactory.CreateOptionJump("--status/--s", false, 1),
+				ElementFactory.CreatArgument("{143}arg"),
+				//move function
+				ElementFactory.CreateOptionJump("--move/-m", false, 4),
+				ElementFactory.CreateOption("--path/-p"),
+				ElementFactory.CreatArgument("{144}arg"),
+				ElementFactory.CreateOption("--moveto/-mt"),
+				ElementFactory.CreatArgument("{145}arg"),
+				//element argument
+				ElementFactory.CreatArgument("{146}arg", false)
+			),
+			ElementFactory.CreatFunction("--tds",
+				ElementFactory.CreateOptionEnd("-help/--h/--?", mandatory:false),
+				ElementFactory.CreateOptionJump("-op1", false, 2),
+				ElementFactory.CreatArgument("op1-1-arg"),
+				ElementFactory.CreatArgument("op1-2-arg"),
+				ElementFactory.CreateOptionJump("-op2", false, 2),
+				ElementFactory.CreatArgument("op2-1-arg"),
+				ElementFactory.CreatArgument("op2-2-arg"),
+				ElementFactory.CreatArgument("tds-arg", false)
+			)
+		];
+
+		CLIParse.AddToken((long)TaskListTokens.Function, "--tds");
+		CLIParse.AddToken((long)TaskListTokens.Option, "-op1", "-op2");
 
 		TokenList list = new(CLIParse.Parse(args));
 		ErrorMessage message = new();
@@ -167,13 +172,13 @@ internal class Program {
 			if (!item.IsAlias(list.CurrentKey)) continue;
 			TaskDebug.Print($"{item.Alias}|{list.CurrentKey}");
 			if (item.Analyzer(list, message)) {
-				Console.WriteLine(message);
+				Console.WriteLine($"f-msm:{message}");
 				return;
 			}
 			list.Reset();
 			list.Move();
 			if (item.GetValues(list, message)) {
-				Console.WriteLine(message);
+				Console.WriteLine($"f-msm2:{message}");
 				return;
 			}
 

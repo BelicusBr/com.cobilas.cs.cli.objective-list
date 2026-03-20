@@ -1,10 +1,9 @@
 ﻿#undef PRINT
 #undef PRINT_TRACE
 
-using Cobilas.CLI.Manager;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
+using Cobilas.CLI.Manager;
 
 namespace Cobilas.CLI.ObjectiveList;
 

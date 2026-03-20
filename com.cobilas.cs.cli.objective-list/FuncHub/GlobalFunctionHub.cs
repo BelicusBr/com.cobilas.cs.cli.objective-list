@@ -6,6 +6,8 @@ namespace Cobilas.CLI.ObjectiveList.FuncHub;
 
 internal static class GlobalFunctionHub {
 
+	internal const string CLOVOFuncKey = "function";
+
 	internal static event Func<string?, bool>? EventAnalyzerArguments;
 	internal static event Action<CLIKey, CLIValueOrder?>? EventDefaultValue;
 	internal static event Func<CLIKey, int, string?>? EventOptionArgumentName;
