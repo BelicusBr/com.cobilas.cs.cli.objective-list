@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Text;
+using System.Xml;
 using Cobilas.CLI.Manager;
 
 namespace Cobilas.CLI.ObjectiveList.FuncHub;
@@ -29,7 +31,20 @@ internal static class InitFunction {
 
 		folderPath = Path.Combine(folderPath, "init.tskl");
 
-		File.CreateText(folderPath).Dispose();
+		if (!File.Exists(folderPath)) {
+			XmlWriterSettings settings = new() {
+				Indent = true,
+				IndentChars = "\t",
+				Encoding = Encoding.UTF8,
+				NewLineOnAttributes = false
+			};
+			using XmlWriter writer = XmlWriter.Create(File.CreateText(folderPath), settings);
+			writer.WriteStartDocument();
+			writer.WriteStartElement("tasks");
+			writer.WriteEndElement();
+			writer.WriteEndDocument();
+			Printer.Print("The init.tskl file has already been created!!!");
+		} else Printer.Print("The init.tskl file was not created because it already exists!");
 	}
 
 	private static void InitDefaultValue(CLIKey alias, CLIValueOrder? value) {

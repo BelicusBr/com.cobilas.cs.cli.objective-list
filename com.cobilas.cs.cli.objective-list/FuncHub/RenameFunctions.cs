@@ -37,6 +37,14 @@ internal static class RenameFunctions {
 			throw new FileNotFoundException($"File '{oldName}' not found!!!");
 
 		File.Move(oldName, Path.Combine(folderPath, newName));
+
+		Printer.EnableNewLine = false;
+		Printer.Print("The file '");
+		Printer.PrintWarning(Path.GetFileName(oldName));
+		Printer.Print("' has been renamed to '");
+		Printer.PrintWarning(newName);
+		Printer.EnableNewLine = true;
+		Printer.Print("'!!!");
 	}
 
 	private static void RanameDefaultValue(CLIKey alias, CLIValueOrder? value) {

@@ -52,6 +52,7 @@ internal class Program {
 		UniFunctions.Start();
 		RenameFunctions.Start();
 		InitFunction.Start();
+		ShowFunction.Start();
 
 		CLIParse.AddToken((long)TaskListTokens.Function,
 			"--version", "-v",
@@ -103,8 +104,9 @@ internal class Program {
 				ElementFactory.CreateOptionJump("--item/--i", false, 2),
 				ElementFactory.CreateOptionJump("--path/-p"),
 				ElementFactory.CreatArgument("{121}arg"),
-				ElementFactory.CreateOptionJump("--list/-l", false),
-				ElementFactory.CreatArgument("{122}arg", false)
+				ElementFactory.CreateOptionJump("--list/-l", false, 1),
+				ElementFactory.CreatArgument("{122}arg", false),
+				ElementFactory.CreatArgument("{123}arg", false)
 			),
 			ElementFactory.CreatFunction("--clear/-c",
 				ElementFactory.CreateOptionEnd("-help/--h/--?", mandatory:false),
