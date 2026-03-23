@@ -1,4 +1,5 @@
-﻿using Cobilas.CLI.Manager.Interfaces;
+﻿using Cobilas.CLI.Manager;
+using Cobilas.CLI.Manager.Interfaces;
 
 namespace Cobilas.CLI.ObjectiveList.Elements;
 
@@ -18,6 +19,50 @@ internal static class ElementFactory {
 
 	internal static IFunction CreatFunction(string? alias, params IOptionFunc[]? options)
 		=> new TaskListFunction(alias, TaskListTokens.Function, options);
+
+	internal static void StartTokens() {
+		// create functions
+		CreateTokens((long)TaskListTokens.Function,
+			"--version/-v",
+			"help/-h/-?",
+			"--rename/-r",
+			"init/-i",
+			"--show/-s",
+			"--element/-e",
+			"--clear/-c",
+			"set"
+		);
+		// create options
+		CreateTokens((long)TaskListTokens.Option,
+			"--item/--i",
+			"--path/-p",
+			"--list/-l",
+			"--otk/--stk",
+			"add",
+			"remove",
+			"--title/-t",
+			"--description/-d",
+			"--replace/-rp",
+			"--status/--s",
+			"--move/-m",
+			"--moveto/-mt",
+			"--replacename/-rn"
+		);
+		// create end option
+		CreateTokens((long)(TaskListTokens.Option | TaskListTokens.EndCode),
+			"-help/--h/--?"
+		);
+	}
+
+	internal static void CreateTDSTokens() {
+		CreateTokens((long)TaskListTokens.Function, "--tds");
+		CreateTokens((long)TaskListTokens.Option, "-op1", "-op2");
+	}
+
+	private static void CreateTokens(long tokenId, params string[] tokens) {
+		foreach (string item in tokens)
+			CLIParse.AddToken(tokenId, item.Split('/', System.StringSplitOptions.RemoveEmptyEntries));
+	}
 
 	private static IOptionFunc ICreateOption(
 		string? alias,

@@ -49,40 +49,10 @@ internal class Program {
 		CLIParse.EndCode = (long)TaskListTokens.EndCode;
 		CLIParse.ArgumentCode = (long)TaskListTokens.Argument;
 
-		UniFunctions.Start();
-		RenameFunctions.Start();
-		InitFunction.Start();
-		ShowFunction.Start();
+		GlobalFunctionHub.CallInitializers();
 
-		CLIParse.AddToken((long)TaskListTokens.Function,
-			"--version", "-v",
-			"help", "-h", "-?",
-			"--rename", "-r",
-			"init", "-i",
-			"--show", "-s",
-			"--element", "-e",
-			"--clear", "-c",
-			"set"
-		);
-		CLIParse.AddToken((long)TaskListTokens.Option,
-			"--item", "--i",
-			"--path", "-p",
-			"--list", "-l",
-			"add",
-			"remove",
-			"--title", "-t",
-			"--description", "-d",
-			"--replace", "-rp",
-			"--status", "--s",
-			"--move", "-m",
-			"--moveto", "-mt",
-			"--replacename", "-rn"
-		);
-		CLIParse.AddToken((long)(TaskListTokens.Option | TaskListTokens.EndCode),
-			"-help",
-			"--h", 
-			"--?"
-		);
+		ElementFactory.StartTokens();
+		ElementFactory.CreateTDSTokens();
 
 		IFunction[] functions = [
 			ElementFactory.CreatFunction("--version/-v",
@@ -101,7 +71,8 @@ internal class Program {
 			),
 			ElementFactory.CreatFunction("--show/-s",
 				ElementFactory.CreateOptionEnd("-help/--h/--?", mandatory:false),
-				ElementFactory.CreateOptionJump("--item/--i", false, 2),
+				ElementFactory.CreateOptionJump("--item/--i", false, 3),
+				ElementFactory.CreateOption("--otk/--stk", false),
 				ElementFactory.CreateOptionJump("--path/-p"),
 				ElementFactory.CreatArgument("{121}arg"),
 				ElementFactory.CreateOptionJump("--list/-l", false, 1),
@@ -161,9 +132,6 @@ internal class Program {
 				ElementFactory.CreatArgument("tds-arg", false)
 			)
 		];
-
-		CLIParse.AddToken((long)TaskListTokens.Function, "--tds");
-		CLIParse.AddToken((long)TaskListTokens.Option, "-op1", "-op2");
 
 		TokenList list = new(CLIParse.Parse(args));
 		ErrorMessage message = new();

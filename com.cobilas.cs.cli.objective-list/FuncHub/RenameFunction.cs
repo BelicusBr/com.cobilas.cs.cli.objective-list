@@ -3,30 +3,31 @@ using System.IO;
 using Cobilas.CLI.Manager;
 
 namespace Cobilas.CLI.ObjectiveList.FuncHub;
-
-internal static class RenameFunctions {
-	private static CLIKey iAlias;
+[CallMethod(nameof(RenameFunction.Start))]
+internal static class RenameFunction {
+	private static readonly CLIKey arg105 = "{105}arg";
+	private static readonly CLIKey arg106 = "{106}arg";
+	private static readonly CLIKey arg107 = "{107}arg";
+	private static readonly CLIKey iAlias = "--rename/-r";
 
 	internal static void Start() {
-		iAlias = "--rename/-r";
-		GlobalFunctionHub.EventGenericFunction += RanameRun;
-		GlobalFunctionHub.EventTreatedValue += RanameTreatedValue;
-		GlobalFunctionHub.EventDefaultValue += RanameDefaultValue;
+		GlobalFunctionHub.EventGenericFunction += Run;
+		GlobalFunctionHub.EventTreatedValue += TreatedValue;
+		GlobalFunctionHub.EventDefaultValue += DefaultValue;
 	}
 	/*
 	 {105}arg = old name
 	 {106}arg = new name
 	 {107}arg = folder path
 	 */
-	private static void RanameRun(CLIKey alias, CLIValueOrder? value) {
+	private static void Run(CLIKey alias, CLIValueOrder? value) {
 		ExceptionMessages.ThrowIfNull(value, nameof(value));
-		string funcValue = value[GlobalFunctionHub.CLOVOFuncKey]!;
 
-		if (iAlias != (CLIKey)funcValue) return;
+		if (iAlias != alias) return;
 
-		string oldName = value["{105}arg"]!;
-		string newName = value["{106}arg"]!;
-		string folderPath = value["{107}arg"]!;
+		string oldName = value[arg105]!;
+		string newName = value[arg106]!;
+		string folderPath = value[arg107]!;
 
 		if (!Directory.Exists(folderPath))
 			throw new DirectoryNotFoundException($"Directory '{folderPath}' not found!!!");
@@ -47,28 +48,28 @@ internal static class RenameFunctions {
 		Printer.Print("'!!!");
 	}
 
-	private static void RanameDefaultValue(CLIKey alias, CLIValueOrder? value) {
+	private static void DefaultValue(CLIKey alias, CLIValueOrder? value) {
 		ExceptionMessages.ThrowIfNull(value, nameof(value));
 		string funcValue = value[GlobalFunctionHub.CLOVOFuncKey]!;
 
 		if (iAlias != (CLIKey)funcValue) return;
 
-		if (alias == (CLIKey)"{107}arg")
-			value.Add("{107}arg", Environment.CurrentDirectory);
+		if (alias == arg107)
+			value.Add(arg107, Environment.CurrentDirectory);
 	}
 
-	private static void RanameTreatedValue(CLIKey alias, CLIValueOrder? value, TokenList? list) {
+	private static void TreatedValue(CLIKey alias, CLIValueOrder? value, TokenList? list) {
 		ExceptionMessages.ThrowIfNull(list, nameof(list));
 		ExceptionMessages.ThrowIfNull(value, nameof(value));
 		string funcValue = value[GlobalFunctionHub.CLOVOFuncKey]!;
 
 		if (iAlias != (CLIKey)funcValue) return;
 
-		if (alias == (CLIKey)"{105}arg")
-			value.Add("{105}arg", list.CurrentKey);
-		else if (alias == (CLIKey)"{106}arg")
-			value.Add("{106}arg", list.CurrentKey);
-		else if (alias == (CLIKey)"{107}arg")
-			value.Add("{107}arg", list.CurrentKey);
+		if (alias == arg105)
+			value.Add(arg105, list.CurrentKey);
+		else if (alias == arg106)
+			value.Add(arg106, list.CurrentKey);
+		else if (alias == arg107)
+			value.Add(arg107, list.CurrentKey);
 	}
 }

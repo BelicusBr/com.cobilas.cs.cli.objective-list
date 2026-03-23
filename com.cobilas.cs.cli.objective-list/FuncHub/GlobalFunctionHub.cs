@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using Cobilas.CLI.Manager;
 using System.Collections.Generic;
 
@@ -7,6 +8,7 @@ namespace Cobilas.CLI.ObjectiveList.FuncHub;
 internal static class GlobalFunctionHub {
 
 	internal const string CLOVOFuncKey = "function";
+	private const BindingFlags flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
 
 	internal static event Func<string?, bool>? EventAnalyzerArguments;
 	internal static event Action<CLIKey, CLIValueOrder?>? EventDefaultValue;
@@ -14,6 +16,20 @@ internal static class GlobalFunctionHub {
 	internal static event Action<CLIKey, CLIValueOrder?>? EventGenericFunction;
 	internal static event Action<CLIKey, CLIValueOrder?, TokenList?>? EventTreatedValue;
 	internal static event Action<CLIKey, KeyValuePair<string, long>, ErrorMessage?>? EventInvalidArgument;
+
+	internal static void CallInitializers() {
+		Assembly assembly = Assembly.GetExecutingAssembly();
+		foreach (Type type in assembly.GetTypes()) {
+			CallMethodAttribute? attribute = type.GetAttribute<CallMethodAttribute>();
+			if (attribute is null) continue;
+			MethodInfo? method = type.GetMethod(attribute.TargetMethod, flags);
+			if (method is null) {
+				Printer.PrintException($"The function '{attribute.TargetMethod}' was not found in the class '{type.FullName}'!");
+				continue;
+			}
+			_ = method.Invoke(null, null);
+		}
+	}
 
 	internal static void DefaultValue(CLIKey alias, CLIValueOrder? valueOrder)
 		=> EventDefaultValue?.Invoke(alias, valueOrder);

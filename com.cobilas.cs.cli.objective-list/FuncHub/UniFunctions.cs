@@ -2,7 +2,7 @@
 using Cobilas.CLI.Manager;
 
 namespace Cobilas.CLI.ObjectiveList.FuncHub;
-
+[CallMethod(nameof(UniFunctions.Start))]
 internal static class UniFunctions {
 	internal static void Start() {
 		GlobalFunctionHub.EventGenericFunction += ShowVersion;

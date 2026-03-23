@@ -1,68 +1,61 @@
 ﻿using System;
 using System.IO;
-using System.Text;
 using System.Xml;
+using System.Text;
 using Cobilas.CLI.Manager;
 
 namespace Cobilas.CLI.ObjectiveList.FuncHub;
-
+[CallMethod(nameof(InitFunction.Start))]
 internal static class InitFunction {
-	private static CLIKey iAlias;
+	internal const string DefaultFileName = "init.tskl";
+
+	private static readonly CLIKey iAlias = "init/-i";
+	private static readonly CLIKey arg111 = "{111}arg";
+	private const string InitFileCreatedMessage = "The init.tskl file has already been created!!!";
+	private const string InitFileAlreadyExistsMessage = "The init.tskl file was not created because it already exists!";
 
 	internal static void Start() {
-		iAlias = "init/-i";
-		GlobalFunctionHub.EventDefaultValue += InitDefaultValue;
-		GlobalFunctionHub.EventTreatedValue += InitTreatedValue;
-		GlobalFunctionHub.EventGenericFunction += InitRun;
+		GlobalFunctionHub.EventGenericFunction += Run;
+		GlobalFunctionHub.EventDefaultValue += DefaultValue;
+		GlobalFunctionHub.EventTreatedValue += TreatedValue;
 	}
 
 	//{111}arg folder path
 
-	private static void InitRun(CLIKey alias, CLIValueOrder? value) {
+	private static void Run(CLIKey alias, CLIValueOrder? value) {
 		ExceptionMessages.ThrowIfNull(value, nameof(value));
-		string funcValue = value[GlobalFunctionHub.CLOVOFuncKey]!;
 
-		if (iAlias != (CLIKey)funcValue) return;
+		if (iAlias != alias) return;
 
-		string folderPath = value["{111}arg"]!;
+		string folderPath = value[arg111]!;
 
 		if (!Directory.Exists(folderPath))
 			throw new DirectoryNotFoundException($"Directory '{folderPath}' not found!!!");
 
-		folderPath = Path.Combine(folderPath, "init.tskl");
+		folderPath = Path.Combine(folderPath, DefaultFileName);
 
 		if (!File.Exists(folderPath)) {
-			XmlWriterSettings settings = new() {
-				Indent = true,
-				IndentChars = "\t",
-				Encoding = Encoding.UTF8,
-				NewLineOnAttributes = false
-			};
-			using XmlWriter writer = XmlWriter.Create(File.CreateText(folderPath), settings);
-			writer.WriteStartDocument();
-			writer.WriteStartElement("tasks");
-			writer.WriteEndElement();
-			writer.WriteEndDocument();
-			Printer.Print("The init.tskl file has already been created!!!");
-		} else Printer.Print("The init.tskl file was not created because it already exists!");
+			FunctionHubUtility.WriteStartupFile(File.CreateText(folderPath));
+			Printer.Print(InitFileCreatedMessage);
+		} else Printer.Print(InitFileAlreadyExistsMessage);
 	}
 
-	private static void InitDefaultValue(CLIKey alias, CLIValueOrder? value) {
+	private static void DefaultValue(CLIKey alias, CLIValueOrder? value) {
 		ExceptionMessages.ThrowIfNull(value, nameof(value));
 		string funcValue = value[GlobalFunctionHub.CLOVOFuncKey]!;
 
 		if (iAlias != (CLIKey)funcValue) return;
-		if (alias == (CLIKey)"{111}arg")
-			value.Add("{111}arg", Environment.CurrentDirectory);
+		if (alias == arg111)
+			value.Add(arg111, Environment.CurrentDirectory);
 	}
 
-	private static void InitTreatedValue(CLIKey alias, CLIValueOrder? value, TokenList? list) {
+	private static void TreatedValue(CLIKey alias, CLIValueOrder? value, TokenList? list) {
 		ExceptionMessages.ThrowIfNull(list, nameof(list));
 		ExceptionMessages.ThrowIfNull(value, nameof(value));
 		string funcValue = value[GlobalFunctionHub.CLOVOFuncKey]!;
 
 		if (iAlias != (CLIKey)funcValue) return;
-		if (alias == (CLIKey)"{111}arg")
-			value.Add("{111}arg", list.CurrentKey);
+		if (alias == arg111)
+			value.Add(arg111, list.CurrentKey);
 	}
 }
