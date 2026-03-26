@@ -7,15 +7,16 @@ using System.Collections.Generic;
 namespace Cobilas.CLI.ObjectiveList.FuncHub;
 [CallMethod(nameof(ShowFunction.Start))]
 internal static partial class ShowFunction {
-	private static readonly CLIKey iAlias = "--show/-s";
 	private static readonly CLIKey arg120 = "{120}arg";
-	private static readonly CLIKey arg120_1 = "{120-1}arg";
 	private static readonly CLIKey arg121 = "{121}arg";
 	private static readonly CLIKey arg122 = "{122}arg";
 	private static readonly CLIKey arg123 = "{123}arg";
-	private static readonly CLIKey otk_stk = "--otk/--stk";
-	private static readonly CLIKey opc_item = "--item/--i";
+	private static readonly CLIKey iAlias = "--show/-s";
 	private static readonly CLIKey opc_list = "--list/-l";
+	private static readonly CLIKey arg120_1 = "{120-1}arg";
+	private static readonly CLIKey opc_item = "--item/--i";
+	private static readonly CLIKey otk_stk = "--otk/--stk";
+	private static readonly CLIKey opc_help = "-help/--h/--?";
 
 	internal static void Start() {
 		GlobalFunctionHub.EventGenericFunction += Run;
@@ -34,10 +35,11 @@ internal static partial class ShowFunction {
 		
 		if (iAlias != alias) return;
 
-		string opt_type = value[arg120]!;
 		string filePath = value[arg123]!;
-		Console.WriteLine(opt_type);
-		switch (opt_type) {
+		switch (value[arg120]) {
+			case nameof(opc_help):
+				HelpFunctions.ShowHelp();
+				break;
 			case "sw-item":
 				string path = value[arg121]!;
 				string tShow = value[arg120_1]!;
@@ -81,28 +83,30 @@ internal static partial class ShowFunction {
 			value.Add(arg120, "sw-item");
 		else if (alias == opc_list)
 			value.Add(arg120, "sw-list");
+		else if (alias == opc_help)
+			value.Add(arg120, nameof(opc_help));
 		else if (alias == otk_stk)
 			switch (list.CurrentKey) {
 				case "--otk":
-					value.Add("{120-1}arg", "o-item");
+					value.Add(arg120_1, "o-item");
 					break;
 				default:
-					value.Add("{120-1}arg", "o-s-item");
+					value.Add(arg120_1, "o-s-item");
 					break;
 			}
 	}
 
 	private static void ShowItem(in string path, in bool oneTask, in string filePath) {
 		string defaultFile = FunctionHubUtility.GetFile(filePath);
-		XmlReaderSettings settings = new() {
-			IgnoreComments = true,
-			IgnoreWhitespace = true,
-			DtdProcessing = DtdProcessing.Prohibit
-		};
-		using XmlReader reader = XmlReader.Create(defaultFile, settings);
-		using XMLIRWElement element = reader.ReadXMLIRW();
-		List<TaskListItem> list = [];
-		list.PopList(element);
+
+		if (!FunctionHubUtility.ValidateTaskPath(path)) {
+			Printer.PrintException($"The path '{path}' is not valid!");
+			Printer.PrintException($"Use numbers and a '.' period to separate numbers.");
+			Printer.PrintException($"Example: '0' or '0.1' or '0.1.5'.");
+			return;
+		}
+
+		List<TaskListItem> list = FunctionHubUtility.GetTaskList(defaultFile);
 		if (oneTask) {
 			foreach (TaskListItem item in list)
 				if (item.Path == path) {
@@ -120,18 +124,16 @@ internal static partial class ShowFunction {
 	}
 
 	private static void ShowList(string status, string filePath) {
+		if (!FunctionHubUtility.ValidateTaskStatus(status, true)) {
+			Printer.PrintException($"The input value '{status}' is not a valid status!");
+			Printer.PrintException("Valid input values: 'true', 'false', or 'all'.");
+			return;
+		}
+
 		status = status.ToLower();
 		string defaultFile = FunctionHubUtility.GetFile(filePath);
-		XmlReaderSettings settings = new() {
-			IgnoreComments = true,
-			IgnoreWhitespace = true,
-			DtdProcessing = DtdProcessing.Prohibit
-		};
-		using XmlReader reader = XmlReader.Create(defaultFile, settings);
-		using XMLIRWElement element = reader.ReadXMLIRW();
-		List<TaskListItem> list = [];
-		list.PopList(element);
-		list.ReorderTaskListItem();
+
+		List<TaskListItem> list = FunctionHubUtility.GetTaskList(defaultFile, true);
 		foreach (TaskListItem item in list)
 			if (item.Status.ToString().ToLower() == status || status == "all")
 				FunctionHubUtility.PrintTaskItem(item);

@@ -21,10 +21,27 @@ internal static class FunctionHubUtility {
 	};
 	private const string TsklFileNotFoundMessage = "The .tskl file was not found in the directory!";
 
-	internal static List<TaskListItem> GetTaskList(string filePath) {
+	internal static bool ValidateTaskStatus(string taskStatus, bool verifyCLIInput = false)
+		=> taskStatus.ToLower() switch {
+			"true" or "false" => true,
+			_ => taskStatus == "all" && verifyCLIInput
+		};
+
+	internal static bool ValidateTaskPath(string taskPath) {
+		bool number = false;
+		foreach (char item in taskPath)
+			if (char.IsNumber(item)) number = true;
+			else if (item == '.' && number) number = false;
+			else return false;
+		return number;
+	}
+
+	internal static List<TaskListItem> GetTaskList(string filePath, bool reorderList = false) {
 		List<TaskListItem> list = [];
 		using XmlReader reader = XmlReader.Create(filePath, r_settings);
 		list.PopList(reader.ReadXMLIRW());
+		if (reorderList)
+			list.ReorderTaskListItem();
 		return list;
 	}
 

@@ -52,7 +52,7 @@ internal class Program {
 		GlobalFunctionHub.CallInitializers();
 
 		ElementFactory.StartTokens();
-		ElementFactory.CreateTDSTokens();
+		//ElementFactory.CreateTDSTokens();
 
 		IFunction[] functions = [
 			ElementFactory.CreatFunction("--version/-v",
@@ -120,17 +120,18 @@ internal class Program {
 				ElementFactory.CreatArgument("{156}arg"),
 				//element argument
 				ElementFactory.CreatArgument("{157}arg", false)
-			),
-			ElementFactory.CreatFunction("--tds",
-				ElementFactory.CreateOptionEnd("-help/--h/--?", mandatory:false),
-				ElementFactory.CreateOptionJump("-op1", false, 2),
-				ElementFactory.CreatArgument("op1-1-arg"),
-				ElementFactory.CreatArgument("op1-2-arg"),
-				ElementFactory.CreateOptionJump("-op2", false, 2),
-				ElementFactory.CreatArgument("op2-1-arg"),
-				ElementFactory.CreatArgument("op2-2-arg"),
-				ElementFactory.CreatArgument("tds-arg", false)
 			)
+			//,
+			//ElementFactory.CreatFunction("--tds",
+			//	ElementFactory.CreateOptionEnd("-help/--h/--?", mandatory:false),
+			//	ElementFactory.CreateOptionJump("-op1", false, 2),
+			//	ElementFactory.CreatArgument("op1-1-arg"),
+			//	ElementFactory.CreatArgument("op1-2-arg"),
+			//	ElementFactory.CreateOptionJump("-op2", false, 2),
+			//	ElementFactory.CreatArgument("op2-1-arg"),
+			//	ElementFactory.CreatArgument("op2-2-arg"),
+			//	ElementFactory.CreatArgument("tds-arg", false)
+			//)
 		];
 
 		TokenList list = new(CLIParse.Parse(args));

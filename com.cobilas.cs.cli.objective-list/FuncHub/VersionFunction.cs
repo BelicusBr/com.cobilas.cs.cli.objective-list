@@ -1,13 +1,11 @@
 ﻿using System;
-using System.IO;
 using Cobilas.CLI.Manager;
 
 namespace Cobilas.CLI.ObjectiveList.FuncHub;
-[CallMethod(nameof(ClearFunction.Start))]
-internal static class ClearFunction {
-	private static readonly CLIKey arg130 = "{130}arg";
-	private static readonly CLIKey arg131 = "{131}arg";
-	private static readonly CLIKey iAlias = "--clear/-c";
+[CallMethod(nameof(VersionFunction.Start))]
+internal static class VersionFunction {
+	private static readonly CLIKey arg100 = "{100}arg";
+	private static readonly CLIKey iAlias = "--version/-v";
 	private static readonly CLIKey opc_help = "-help/--h/--?";
 
 	internal static void Start() {
@@ -16,30 +14,29 @@ internal static class ClearFunction {
 		GlobalFunctionHub.EventTreatedValue += TreatedValue;
 	}
 
-	//{131}arg file path
-
 	private static void Run(CLIKey alias, CLIValueOrder? value) {
 		ExceptionMessages.ThrowIfNull(value, nameof(value));
 
 		if (iAlias != alias) return;
 
-		switch (value[arg130]) {
+		switch (value[arg100]) {
 			case nameof(opc_help):
-				HelpFunctions.ClearHelp();
+				Printer.Print("Revert to the previous app version!");
+				Printer.EnableNewLine = false;
+				Printer.Print("app.exe [");
+				Printer.PrintWarning("--version");
+				Printer.Print(" or ");
+				Printer.PrintWarning("-v");
+				Printer.Print("] [");
+				Printer.PrintWarning("options");
+				Printer.EnableNewLine = true;
+				Printer.Print("]");
 				break;
 			default:
-				string filePath = FunctionHubUtility.GetFile(value[arg131]);
-
-				using (FileStream file = File.Open(filePath, FileMode.Open)) {
-					file.SetLength(0L);
-					FunctionHubUtility.WriteStartupFile(file);
-
-					Printer.EnableNewLine = false;
-					Printer.Print("The file '");
-					Printer.PrintWarning(filePath);
-					Printer.EnableNewLine = true;
-					Printer.Print("' was successfully cleaned!");
-				}
+				Printer.EnableNewLine = false;
+				Printer.Print("Version: ");
+				Printer.EnableNewLine = true;
+				Printer.PrintWarning(Program.version);
 				break;
 		}
 	}
@@ -50,10 +47,8 @@ internal static class ClearFunction {
 
 		if (iAlias != (CLIKey)funcValue) return;
 
-		if (alias == arg131)
-			value.Add(arg131, Path.Combine(Environment.CurrentDirectory, InitFunction.DefaultFileName));
-		else if (alias == opc_help)
-			value.Add(arg130, "none");
+		if (alias == opc_help)
+			value.Add(arg100, "none");
 	}
 
 	private static void TreatedValue(CLIKey alias, CLIValueOrder? value, TokenList? list) {
@@ -63,9 +58,7 @@ internal static class ClearFunction {
 
 		if (iAlias != (CLIKey)funcValue) return;
 
-		if (alias == arg131)
-			value.Add(arg131, list.CurrentKey);
-		else if (alias == opc_help)
-			value.Add(arg130, nameof(opc_help));
+		if (alias == opc_help)
+			value.Add(arg100, nameof(opc_help));
 	}
 }

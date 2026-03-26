@@ -5,10 +5,12 @@ using Cobilas.CLI.Manager;
 namespace Cobilas.CLI.ObjectiveList.FuncHub;
 [CallMethod(nameof(RenameFunction.Start))]
 internal static class RenameFunction {
+	private static readonly CLIKey arg100 = "{100}arg";
 	private static readonly CLIKey arg105 = "{105}arg";
 	private static readonly CLIKey arg106 = "{106}arg";
 	private static readonly CLIKey arg107 = "{107}arg";
 	private static readonly CLIKey iAlias = "--rename/-r";
+	private static readonly CLIKey opc_help = "-help/--h/--?";
 
 	internal static void Start() {
 		GlobalFunctionHub.EventGenericFunction += Run;
@@ -25,27 +27,38 @@ internal static class RenameFunction {
 
 		if (iAlias != alias) return;
 
-		string oldName = value[arg105]!;
-		string newName = value[arg106]!;
-		string folderPath = value[arg107]!;
+		switch (value[arg100]) {
+			case nameof(opc_help):
+				HelpFunctions.RenameHelp();
+				break;
+			default:
+				string oldName = value[arg105]!;
+				string newName = value[arg106]!;
+				string folderPath = value[arg107]!;
 
-		if (!Directory.Exists(folderPath))
-			throw new DirectoryNotFoundException($"Directory '{folderPath}' not found!!!");
+				if (!Directory.Exists(folderPath))
+					throw new DirectoryNotFoundException($"Directory '{folderPath}' not found!!!");
 
-		oldName = Path.Combine(folderPath, oldName);
+				oldName = Path.Combine(folderPath, oldName);
 
-		if (!File.Exists(oldName))
-			throw new FileNotFoundException($"File '{oldName}' not found!!!");
+				if (!File.Exists(oldName))
+					throw new FileNotFoundException($"File '{oldName}' not found!!!");
 
-		File.Move(oldName, Path.Combine(folderPath, newName));
+				if (!newName.Contains(".tskl"))
+					newName = $"{newName}.tskl";
 
-		Printer.EnableNewLine = false;
-		Printer.Print("The file '");
-		Printer.PrintWarning(Path.GetFileName(oldName));
-		Printer.Print("' has been renamed to '");
-		Printer.PrintWarning(newName);
-		Printer.EnableNewLine = true;
-		Printer.Print("'!!!");
+				File.Move(oldName, Path.Combine(folderPath, newName));
+
+				Printer.EnableNewLine = false;
+				Printer.Print("The file '");
+				Printer.PrintWarning(Path.GetFileName(oldName));
+				Printer.Print("' has been renamed to '");
+				Printer.PrintWarning(newName);
+				Printer.EnableNewLine = true;
+				Printer.Print("'!!!");
+				break;
+		}
+
 	}
 
 	private static void DefaultValue(CLIKey alias, CLIValueOrder? value) {
@@ -56,6 +69,8 @@ internal static class RenameFunction {
 
 		if (alias == arg107)
 			value.Add(arg107, Environment.CurrentDirectory);
+		else if (alias == opc_help)
+			value.Add(arg100, "none");
 	}
 
 	private static void TreatedValue(CLIKey alias, CLIValueOrder? value, TokenList? list) {
@@ -71,5 +86,7 @@ internal static class RenameFunction {
 			value.Add(arg106, list.CurrentKey);
 		else if (alias == arg107)
 			value.Add(arg107, list.CurrentKey);
+		else if (alias == opc_help)
+			value.Add(arg100, nameof(opc_help));
 	}
 }

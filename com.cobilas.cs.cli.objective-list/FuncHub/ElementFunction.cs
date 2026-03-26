@@ -23,9 +23,10 @@ internal static class ElementFunction {
 	private static readonly CLIKey opc_add = "add";
 	/// <summary>opc type</summary>
 	private static readonly CLIKey opc_remove = "remove";
-	private static readonly CLIKey opc_a_path = "--path/-p";
-	private static readonly CLIKey opc_a_desc = "--description/-d";
 	private static readonly CLIKey iAlias = "--element/-e";
+	private static readonly CLIKey opc_a_path = "--path/-p";
+	private static readonly CLIKey opc_help = "-help/--h/--?";
+	private static readonly CLIKey opc_a_desc = "--description/-d";
 
 	internal static void Start() {
 		GlobalFunctionHub.EventGenericFunction += Run;
@@ -48,6 +49,9 @@ internal static class ElementFunction {
 		string filePath = FunctionHubUtility.GetFile(value[arg145]);
 
 		switch (value[arg140]) {
+			case nameof(opc_help):
+				HelpFunctions.ElementHelp();
+				break;
 			case nameof(opc_add):
 				string path = value[arg141]!;
 				string title = value[arg142]!;
@@ -85,6 +89,8 @@ internal static class ElementFunction {
 			value.Add(arg140, nameof(opc_add));
 		else if (alias == opc_remove)
 			value.Add(arg140, nameof(opc_remove));
+		else if (alias == opc_help)
+			value.Add(arg140, nameof(opc_help));
 		else if (alias == arg141)
 			value.Add(arg141, list.CurrentKey);
 		else if (alias == arg142)
@@ -107,6 +113,12 @@ internal static class ElementFunction {
 					index = item[0];
 			list.Add(new((int)index + 1, title, description, "true"));
 		} else {
+			if (!FunctionHubUtility.ValidateTaskPath(path)) {
+				Printer.PrintException($"The path '{path}' is not valid!");
+				Printer.PrintException($"Use numbers and a '.' period to separate numbers.");
+				Printer.PrintException($"Example: '0' or '0.1' or '0.1.5'.");
+				return;
+			}
 			TaskPath path1 = new(path);
 			foreach (TaskListItem item in list)
 				if (item.TaskPath == path1) {
@@ -123,6 +135,13 @@ internal static class ElementFunction {
 	}
 
 	private static void RemoveElement(string path, string filePath) {
+		if (!FunctionHubUtility.ValidateTaskPath(path)) {
+			Printer.PrintException($"The path '{path}' is not valid!");
+			Printer.PrintException($"Use numbers and a '.' period to separate numbers.");
+			Printer.PrintException($"Example: '0' or '0.1' or '0.1.5'.");
+			return;
+		}
+
 		List<TaskListItem> list = FunctionHubUtility.GetTaskList(filePath);
 
 		TaskPath path1 = new(path);

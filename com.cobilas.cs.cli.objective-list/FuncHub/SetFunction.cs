@@ -16,6 +16,7 @@ internal static class SetFunction {
 	private static readonly CLIKey arg157 = "{157}arg";
 	private static readonly CLIKey opc_move = "--move/-m";
 	private static readonly CLIKey opc_title = "--title/-t";
+	private static readonly CLIKey opc_help = "-help/--h/--?";
 	private static readonly CLIKey opc_status = "--status/--s";
 	private static readonly CLIKey opc_replace = "--replace/-rp";
 	private static readonly CLIKey opc_description = "--description/-d";
@@ -43,6 +44,9 @@ internal static class SetFunction {
 		string filePath = value[arg157]!;
 
 		switch (value[arg150]) {
+			case nameof(opc_help):
+				HelpFunctions.SetHelp();
+				break;
 			case nameof(opc_replace):
 				string path = value[arg151]!;
 				string title = value[arg152]!;
@@ -99,6 +103,8 @@ internal static class SetFunction {
 			value.Add(arg150, nameof(opc_move));
 		else if (alias == opc_replace)
 			value.Add(arg150, nameof(opc_replace));
+		else if (alias == opc_help)
+			value.Add(arg150, nameof(opc_help));
 	}
 
 	private static void ReplaceOption(
@@ -107,6 +113,18 @@ internal static class SetFunction {
 		string description,
 		string status,
 		string filePath) {
+
+
+		if (!FunctionHubUtility.ValidateTaskPath(path)) {
+			Printer.PrintException($"The path '{path}' is not valid!");
+			Printer.PrintException($"Use numbers and a '.' period to separate numbers.");
+			Printer.PrintException($"Example: '0' or '0.1' or '0.1.5'.");
+			return;
+		} else if (!FunctionHubUtility.ValidateTaskStatus(status)) {
+			Printer.PrintException($"The input value '{status}' is not a valid status!");
+			Printer.PrintException("Valid input values: 'true', 'false', or 'all'.");
+			return;
+		}
 
 		filePath = FunctionHubUtility.GetFile(filePath);
 
@@ -175,6 +193,18 @@ internal static class SetFunction {
 	}
 
 	private static void MoveOption(string path, string moveTo, string filePath) {
+
+		if (!FunctionHubUtility.ValidateTaskPath(path)) {
+			Printer.PrintException($"The path '{path}' is not valid!");
+			Printer.PrintException($"Use numbers and a '.' period to separate numbers.");
+			Printer.PrintException($"Example: '0' or '0.1' or '0.1.5'.");
+			return;
+		} else if (!FunctionHubUtility.ValidateTaskPath(moveTo)) {
+			Printer.PrintException($"The path '{moveTo}' is not valid!");
+			Printer.PrintException($"Use numbers and a '.' period to separate numbers.");
+			Printer.PrintException($"Example: '0' or '0.1' or '0.1.5'.");
+			return;
+		}
 
 		filePath = FunctionHubUtility.GetFile(filePath);
 
