@@ -98,7 +98,7 @@ internal static class ElementFunction {
 	}
 
 	private static void AddElement(string path, string title, string description, string filePath) {
-		List<TaskListItem> list = TaskListFile.GetTaskList(filePath);
+		List<TaskListItem> list = FunctionHubUtility.GetTaskList(filePath);
 
 		if (path == defaultPath) {
 			long index = 0;
@@ -116,14 +116,14 @@ internal static class ElementFunction {
 			list.Add(new(TaskPath.GetDimension(path), title, description, "true"));
 		}
 
-		TaskListFile.SetTaskList(list, filePath);
+		FunctionHubUtility.SetTaskList(list, filePath);
 
 		if (list.Count != 0)
 			FunctionHubUtility.PrintTaskItem(list[list.Count - 1]);
 	}
 
 	private static void RemoveElement(string path, string filePath) {
-		List<TaskListItem> list = TaskListFile.GetTaskList(filePath);
+		List<TaskListItem> list = FunctionHubUtility.GetTaskList(filePath);
 
 		TaskPath path1 = new(path);
 		for (int I = 0; I < list.Count; I++) {
@@ -137,7 +137,7 @@ internal static class ElementFunction {
 				Printer.PrintWarning(item.Title);
 				Printer.EnableNewLine = true;
 				Printer.Print("' has been successfully removed!");
-				TaskListFile.SetTaskList(list, filePath);
+				FunctionHubUtility.SetTaskList(list, filePath);
 				return;
 			}
 		}

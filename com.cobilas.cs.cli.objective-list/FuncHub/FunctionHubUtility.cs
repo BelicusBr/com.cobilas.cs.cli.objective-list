@@ -2,29 +2,62 @@
 using System.IO;
 using System.Xml;
 using System.Text;
+using System.Collections.Generic;
 
 namespace Cobilas.CLI.ObjectiveList.FuncHub;
 
 internal static class FunctionHubUtility {
+	private static readonly List<char> invalidPathChars = [.. Path.GetInvalidPathChars()];
+	private static readonly XmlReaderSettings r_settings = new() {
+		IgnoreComments = true,
+		IgnoreWhitespace = true,
+		DtdProcessing = DtdProcessing.Prohibit
+	};
+	private static readonly XmlWriterSettings w_settings = new() {
+		Indent = true,
+		IndentChars = "\t",
+		Encoding = Encoding.UTF8,
+		NewLineOnAttributes = false
+	};
 	private const string TsklFileNotFoundMessage = "The .tskl file was not found in the directory!";
+
+	internal static List<TaskListItem> GetTaskList(string filePath) {
+		List<TaskListItem> list = [];
+		using XmlReader reader = XmlReader.Create(filePath, r_settings);
+		list.PopList(reader.ReadXMLIRW());
+		return list;
+	}
+
+	internal static void SetTaskList(List<TaskListItem> list, string filePath) {
+		using FileStream stream = File.OpenWrite(filePath);
+		stream.SetLength(0L);
+		using XmlWriter writer = XmlWriter.Create(stream, w_settings);
+		XMLIRWElement element = new("tasks");
+		foreach (TaskListItem item in list) {
+			XMLIRWElement tskl_item = new("tskl_item",
+				new XMLIRWAttribute("path", item.Path),
+				new XMLIRWAttribute("title", item.Title),
+				new XMLIRWAttribute("description", item.Description),
+				new XMLIRWAttribute("status", item.Status)
+			);
+			element.Add(tskl_item);
+		}
+
+		writer.WriterXMLIRW(new("root", element));
+	}
 
 	internal static string GetFile(in string? path) {
 		ExceptionMessages.ThrowIfNullOrWhiteSpace(path, nameof(path));
-		string defaultFile = path;
 
-		if (!File.Exists(defaultFile)) {
-			bool exist = false;
-			foreach (string item in Directory.GetFiles(Path.GetDirectoryName(path)!)) {
-				if (Path.GetExtension(item) == ".tskl") {
-					defaultFile = item;
-					exist = true;
-					break;
-				}
-			}
-			if (!exist)
-				throw new FileNotFoundException(TsklFileNotFoundMessage);
-		}
-		return defaultFile;
+		if (IsInvalidPath(path))
+			throw new InvalidDataException($"The path '{path}' is not valid!");
+		else if (File.Exists(path))
+			return path;
+		else if (Directory.Exists(path))
+			foreach (string item in Directory.GetFiles(path))
+				if (Path.GetExtension(item) == ".tskl")
+					return item;
+		throw new FileNotFoundException(TsklFileNotFoundMessage);
 	}
 
 	internal static void WriteStartupFile(Stream stream)
@@ -56,6 +89,14 @@ internal static class FunctionHubUtility {
 
 	internal static void PrintTaskItem(TaskListItem item)
 		=> PrintTaskItem(item.Path, item.Title, item.Description, item.Status.ToString());
+
+	private static bool IsInvalidPath(string path) {
+		ExceptionMessages.ThrowIfNull(invalidPathChars, nameof(invalidPathChars));
+		foreach (char item in invalidPathChars)
+			if (path.Contains(item))
+				return true;
+		return false;
+	}
 
 	private static void IWriteStartupFile(object stream) {
 		XmlWriterSettings settings = new() {

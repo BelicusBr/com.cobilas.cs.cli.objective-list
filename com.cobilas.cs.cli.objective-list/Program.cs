@@ -105,21 +105,21 @@ internal class Program {
 				//replace function
 				ElementFactory.CreateOptionJump("--replace/-rp", false, 8),
 				ElementFactory.CreateOption("--path/-p"),
-				ElementFactory.CreatArgument("{141}arg"),
+				ElementFactory.CreatArgument("{151}arg"),
 				ElementFactory.CreateOptionJump("--title/-t", false, 1),
-				ElementFactory.CreatArgument("{142}arg"),
+				ElementFactory.CreatArgument("{152}arg"),
 				ElementFactory.CreateOptionJump("--description/-d", false, 1),
-				ElementFactory.CreatArgument("{143}arg"),
+				ElementFactory.CreatArgument("{153}arg"),
 				ElementFactory.CreateOptionJump("--status/--s", false, 1),
-				ElementFactory.CreatArgument("{143}arg"),
+				ElementFactory.CreatArgument("{154}arg"),
 				//move function
 				ElementFactory.CreateOptionJump("--move/-m", false, 4),
 				ElementFactory.CreateOption("--path/-p"),
-				ElementFactory.CreatArgument("{144}arg"),
+				ElementFactory.CreatArgument("{155}arg"),
 				ElementFactory.CreateOption("--moveto/-mt"),
-				ElementFactory.CreatArgument("{145}arg"),
+				ElementFactory.CreatArgument("{156}arg"),
 				//element argument
-				ElementFactory.CreatArgument("{146}arg", false)
+				ElementFactory.CreatArgument("{157}arg", false)
 			),
 			ElementFactory.CreatFunction("--tds",
 				ElementFactory.CreateOptionEnd("-help/--h/--?", mandatory:false),
