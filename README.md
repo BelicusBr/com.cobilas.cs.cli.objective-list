@@ -1,103 +1,168 @@
 # Cobilas.CLI.ObjectiveList
-## Functions
-### [AppName] [--version/-v]
+
+A command-line tool for managing task lists stored in `.tskl` files (XML format).
+
+---
+
+## Commands
+
+### `--version` / `-v`
 Displays the current version of the application.
 
-### [AppName] [--help/-h]
-Displays the list of program commands.
+```
+[AppName] --version
+[AppName] -v
+```
 
-### [AppName] [init/-i] [arg:file path]
-Initializes a file in .xml format where tasks will be stored.</br>
+---
 
-[arg:file path]		Relative or full path of the target file.
+### `help` / `-h` / `-?`
+Displays the list of available commands.
 
-### [AppName] [--rename/-r] [arg1:folder path] [arg2:file name] [arg3:new file name]
-Renames the file where tasks are stored.</br>
-[arg1:folder path] Relative or full directory path of the target file.</br>
-[arg2:file name] The name of the target file.</br>
-[arg3:new file name] The new name for the target file.
+```
+[AppName] help
+[AppName] -h
+[AppName] -?
+```
 
-### [AppName] [--clear/-c] [arg:file path]
-Clears the task list.</br>
+---
 
-[arg:file path]		Relative or full path of the target file.
+### `init` / `-i`
+Initializes a new `.tskl` file where tasks will be stored.
 
-### [AppName] [--show/-s] [--item/--i] [arg:file path]
-[AppName] [--show/-s] [--item/--i] [--path/-p] [opc-arg:path] [arg:file path]</br>
-Displays task list items.</br>
+```
+[AppName] init [path:file/folder]
+[AppName] -i [path:file/folder]
+```
 
-[arg:file path]		Relative or full path of the target file.
-#### mandatory options
-[--path/-p] [opc-arg:path] Represents the path in the task list tree.[example: 1.2.5]
+| Option | Description |
+|---|---|
+| `path:file/folder` *(optional)* | Relative or full path of the destination directory or file. |
 
-### [AppName] [--show/-s] [--list/-l] [--status/--s] [arg:file path]
-Displays task list items.</br>
+---
 
-[arg:file path]		Relative or full path of the target file.
-#### options
-[--status/--s] [arg[true|false]] The status of the task.
+### `--rename` / `-r`
+Renames an existing `.tskl` file.
 
-### [AppName] [--element/-e] [add] [arg:file path]
-Changes the task list.</br>
-[AppName] [--element/-e] [add] [--title/-t] [opc-arg] [--path/-p] [opc-arg:path] [--description/-d] [opc-arg] [arg:file path]</br>
-[AppName] [--element/-e] [add] [--title/-t] [opc-arg] [--path/-p] [opc-arg:path] [arg:file path]</br>
-[AppName] [--element/-e] [add] [--title/-t] [opc-arg] [--description/-d] [opc-arg] [arg:file path]</br>
-[AppName] [--element/-e] [add] [--title/-t] [opc-arg] [arg:file path]</br>
+```
+[AppName] --rename [arg1:file name] [arg2:new file name] [path:file/folder]
+[AppName] -r [arg1:file name] [arg2:new file name] [path:file/folder]
+```
 
-[arg:file path]		Relative or full path of the target file.
+| Option | Description |
+|---|---|
+| `arg1:file name` *(required)* | The name of the target file. |
+| `arg2:new file name` *(required)* | The new name for the target file. |
+| `path:file/folder` *(optional)* | Relative or full path of the destination directory or file. |
 
-#### mandatory options
-[--title/-t] [opc-arg] The task title.
+---
 
-#### options
-[--path/-p] [opc-arg:path] Represents the path in the task list tree.[example: 1.2.5]</br>
-[--description/-d] [opc-arg] The task description.
+### `--clear` / `-c`
+Clears all tasks from the task list.
 
-### [AppName] [--element/-e] [remove] [arg:file path]
-Changes the task list.</br>
-[AppName] [--element/-e] [remove] [--path/-p] [opc-arg:path] [arg:file path]</br>
+```
+[AppName] --clear [path:file/folder]
+[AppName] -c [path:file/folder]
+```
 
-[arg:file path]		Relative or full path of the target file.
+| Option | Description |
+|---|---|
+| `path:file/folder` *(optional)* | Relative or full path of the destination directory or file. |
 
-#### mandatory options
-[--path/-p] [opc-arg:path] Represents the path in the task list tree.[example: 1.2.5]
+---
 
-### [AppName] [set] [--replacetile/-rt] [arg:file path]
-Change specific items in task list.</br>
-[AppName] [set] [--replacetile/-rt] [--title/-t] [opc-arg] [--path/-p] [opc-arg:path] [arg:file path]</br>
+### `--show` / `-s`
 
-[arg:file path]		Relative or full path of the target file.
+#### Show a specific task (`--item` / `--i`)
+Displays a specific task from the task list tree.
 
-#### mandatory options
-[--title/-t] [opc-arg] The task title.</br>
-[--path/-p] [opc-arg:path] Represents the path in the task list tree.[example: 1.2.5]
+```
+[AppName] --show --item --path [path] [--otk|--stk] [path:file/folder]
+[AppName] -s --i -p [path] [--otk|--stk] [path:file/folder]
+```
 
-### [AppName] [set] [--replacedesc/-rd] [arg:file path]
-Change specific items in task list.</br>
-[AppName] [set] [--replacedesc/-rd] [--description/-d] [opc-arg] [--path/-p] [opc-arg:path] [arg:file path]</br>
+| Option | Description |
+|---|---|
+| `--path` / `-p` *(required)* | Path of the task in the list tree. Example: `1.2.5` |
+| `--otk` *(optional)* | Displays the specified task **without** its subtasks. |
+| `--stk` *(optional)* | Displays the specified task **along with** its subtasks. |
+| `path:file/folder` *(optional)* | Relative or full path of the destination directory or file. |
 
-[arg:file path]		Relative or full path of the target file.
+#### Show the full task list (`--list` / `-l`)
+Displays all tasks in the task list, with optional filtering by status.
 
-#### mandatory options
-[--description/-d] [opc-arg] The task description.</br>
-[--path/-p] [opc-arg:path] Represents the path in the task list tree.[example: 1.2.5]
+```
+[AppName] --show --list [--status [true|false|all]] [path:file/folder]
+[AppName] -s -l [--status [true|false|all]] [path:file/folder]
+```
 
-### [AppName] [set] [--replacestatus/-rs] [arg:file path]
-Change specific items in task list.</br>
-[AppName] [set] [--replacestatus/-rs] [--status/--s] [arg[true|false]] [--path/-p] [opc-arg:path] [arg:file path]</br>
+| Option | Description |
+|---|---|
+| `--status` / `--s` *(optional)* | Filters tasks by status. Accepted values: `true`, `false`, `all`. |
+| `path:file/folder` *(optional)* | Relative or full path of the destination directory or file. |
 
-[arg:file path]		Relative or full path of the target file.
+---
 
-#### mandatory options
-[--status/--s] [arg[true|false]] The status of the task.</br>
-[--path/-p] [opc-arg:path] Represents the path in the task list tree.[example: 1.2.5]
+### `--element` / `-e`
 
-### [AppName] [set] [--move/-m] [arg:file path]
-Change specific items in task list.</br>
-[AppName] [set] [--move/-m] [--path/-p] [opc-arg:1.0.1] [--moveto/-mt] [arg[1.0.2]] [arg:file path]</br>
+#### Add a task (`add`)
+Adds a new task to the task list.
 
-[arg:file path]		Relative or full path of the target file.
+```
+[AppName] --element add --title [title] [--path [path]] [--description [desc]] [path:file/folder]
+[AppName] -e add -t [title] [-p [path]] [-d [desc]] [path:file/folder]
+```
 
-#### mandatory options
-[--moveto/-mt] [arg[true|false]] The path to move to.[example:1.0.1 to 1.0.2]</br>
-[--path/-p] [opc-arg:path] Represents the path in the task list tree.[example: 1.2.5]
+| Option | Description |
+|---|---|
+| `--title` / `-t` *(required)* | The task title. |
+| `--path` / `-p` *(optional)* | Position in the task list tree where the task will be added. Example: `1.2.5` |
+| `--description` / `-d` *(optional)* | The task description. |
+| `path:file/folder` *(optional)* | Relative or full path of the destination directory or file. |
+
+#### Remove a task (`remove`)
+Removes a task from the task list.
+
+```
+[AppName] --element remove --path [path] [path:file/folder]
+[AppName] -e remove -p [path] [path:file/folder]
+```
+
+| Option | Description |
+|---|---|
+| `--path` / `-p` *(required)* | Path of the task to remove in the list tree. Example: `1.2.5` |
+| `path:file/folder` *(optional)* | Relative or full path of the destination directory or file. |
+
+---
+
+### `set`
+
+#### Replace task data (`--replace` / `-rp`)
+Updates the title, description, or status of a specific task.
+
+```
+[AppName] set --replace --path [path] [--title [title]] [--description [desc]] [--status [true|false]] [path:file/folder]
+[AppName] set -rp -p [path] [-t [title]] [-d [desc]] [--s [true|false]] [path:file/folder]
+```
+
+| Option | Description |
+|---|---|
+| `--path` / `-p` *(required)* | Path of the task in the list tree. Example: `1.2.5` |
+| `--title` / `-t` *(optional)* | New title for the task. |
+| `--description` / `-d` *(optional)* | New description for the task. |
+| `--status` / `--s` *(optional)* | New status for the task. Accepted values: `true`, `false`. |
+| `path:file/folder` *(optional)* | Relative or full path of the destination directory or file. |
+
+#### Move a task (`--move` / `-m`)
+Moves a task from one position to another in the task list tree.
+
+```
+[AppName] set --move --path [origin] --moveto [destination] [path:file/folder]
+[AppName] set -m -p [origin] -mt [destination] [path:file/folder]
+```
+
+| Option | Description |
+|---|---|
+| `--path` / `-p` *(required)* | Current path of the task. Example: `1.0.1` |
+| `--moveto` / `-mt` *(required)* | Destination path for the task. Example: `1.0.2` |
+| `path:file/folder` *(optional)* | Relative or full path of the destination directory or file. |
