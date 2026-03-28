@@ -38,6 +38,7 @@ internal static partial class ShowFunction {
 		string filePath = value[arg123]!;
 		switch (value[arg120]) {
 			case nameof(opc_help):
+				Printer.Print("Allows you to view all tasks present in the .tskl file!");
 				HelpFunctions.ShowHelp();
 				break;
 			case "sw-item":

@@ -29,6 +29,7 @@ internal static class RenameFunction {
 
 		switch (value[arg100]) {
 			case nameof(opc_help):
+				Printer.Print("Allows you to rename the .tskl file!");
 				HelpFunctions.RenameHelp();
 				break;
 			default:
@@ -46,6 +47,9 @@ internal static class RenameFunction {
 
 				if (!newName.Contains(".tskl"))
 					newName = $"{newName}.tskl";
+
+				if (FunctionHubUtility.IsInvalidPath(newName, true))
+					throw new IOException($"The new name '{newName}' is not valid!");
 
 				File.Move(oldName, Path.Combine(folderPath, newName));
 

@@ -45,6 +45,7 @@ internal static class SetFunction {
 
 		switch (value[arg150]) {
 			case nameof(opc_help):
+				Printer.Print("It allows you to change certain aspects of the task!");
 				HelpFunctions.SetHelp();
 				break;
 			case nameof(opc_replace):

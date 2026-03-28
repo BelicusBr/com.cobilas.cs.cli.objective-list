@@ -143,13 +143,13 @@ internal class Program {
 			if (!item.IsAlias(list.CurrentKey)) continue;
 			TaskDebug.Print($"{item.Alias}|{list.CurrentKey}");
 			if (item.Analyzer(list, message)) {
-				Console.WriteLine($"f-msm:{message}");
+				Printer.PrintException(message);
 				return;
 			}
 			list.Reset();
 			list.Move();
 			if (item.GetValues(list, message)) {
-				Console.WriteLine($"f-msm2:{message}");
+				Printer.PrintException(message);
 				return;
 			}
 
@@ -159,9 +159,9 @@ internal class Program {
 
 		if (!runFunction) {
 			if (list.CurrentValue == (long)TaskListTokens.EndCode)
-				Console.WriteLine($"Nenhuma função foi chamado!!!");
-			else Console.WriteLine($"Elemento '{list.CurrentKey}' não identificado!!!");
-			CLIParse.GetFunction<Action<CLIKey, CLIValueOrder?>>(4)("-h", null);
+				Printer.PrintException("No function was called!!!");
+			else Printer.PrintException($"Element '{list.CurrentKey}' not identified!!!");
+			HelpFunctions.ShowHelp();
 		}
 
 		TaskDebug.Print(list);

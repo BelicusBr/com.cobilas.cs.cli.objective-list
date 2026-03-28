@@ -21,16 +21,8 @@ internal static class VersionFunction {
 
 		switch (value[arg100]) {
 			case nameof(opc_help):
-				Printer.Print("Revert to the previous app version!");
-				Printer.EnableNewLine = false;
-				Printer.Print("app.exe [");
-				Printer.PrintWarning("--version");
-				Printer.Print(" or ");
-				Printer.PrintWarning("-v");
-				Printer.Print("] [");
-				Printer.PrintWarning("options");
-				Printer.EnableNewLine = true;
-				Printer.Print("]");
+				Printer.Print("Show the current version of the app!");
+				HelpFunctions.VersionHelp();
 				break;
 			default:
 				Printer.EnableNewLine = false;

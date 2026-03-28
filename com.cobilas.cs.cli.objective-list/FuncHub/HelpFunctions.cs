@@ -11,8 +11,9 @@ internal static class HelpFunctions {
 		GlobalFunctionHub.EventGenericFunction += Run;
 	}
 
+	internal static void ShowHelp() => Run("-h", null);
+
 	private static void Run(CLIKey alias, CLIValueOrder? value) {
-		ExceptionMessages.ThrowIfNull(value, nameof(value));
 
 		if (iAlias != alias) return;
 
@@ -23,7 +24,7 @@ internal static class HelpFunctions {
 		Printer.Print(">>>===================////");
 		InitHelp();
 		Printer.Print(">>>===================////");
-		ShowHelp();
+		IShowHelp();
 		Printer.Print(">>>===================////");
 		ClearHelp();
 		Printer.Print(">>>===================////");
@@ -101,7 +102,7 @@ internal static class HelpFunctions {
 		FileAndFolderArgument(1);
 	}
 
-	internal static void ShowHelp() {
+	internal static void IShowHelp() {
 		Printer.EnableNewLine = false;
 		Printer.Print($"{Program.FriendlyName} [");
 		Printer.PrintWarning("--show/-s");

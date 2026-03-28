@@ -50,6 +50,7 @@ internal static class ElementFunction {
 
 		switch (value[arg140]) {
 			case nameof(opc_help):
+				Printer.Print("Allows you to add and remove tasks from the .tskl file!");
 				HelpFunctions.ElementHelp();
 				break;
 			case nameof(opc_add):

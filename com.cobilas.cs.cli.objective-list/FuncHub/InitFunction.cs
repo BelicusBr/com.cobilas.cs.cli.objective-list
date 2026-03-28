@@ -28,6 +28,7 @@ internal static class InitFunction {
 		if (iAlias != alias) return;
 		switch (value[arg110]) {
 			case nameof(opc_help):
+				Printer.Print("Initializes a new .tskl file!");
 				HelpFunctions.InitHelp();
 				break;
 			default:

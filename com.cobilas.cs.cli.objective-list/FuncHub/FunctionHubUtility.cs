@@ -8,6 +8,7 @@ namespace Cobilas.CLI.ObjectiveList.FuncHub;
 
 internal static class FunctionHubUtility {
 	private static readonly List<char> invalidPathChars = [.. Path.GetInvalidPathChars()];
+	private static readonly List<char> InvalidFileNameChars = [.. Path.GetInvalidFileNameChars()];
 	private static readonly XmlReaderSettings r_settings = new() {
 		IgnoreComments = true,
 		IgnoreWhitespace = true,
@@ -63,8 +64,11 @@ internal static class FunctionHubUtility {
 		writer.WriterXMLIRW(new("root", element));
 	}
 
-	internal static string GetFile(in string? path) {
+	internal static string GetFile(string? path) {
 		ExceptionMessages.ThrowIfNullOrWhiteSpace(path, nameof(path));
+
+		if (!Path.IsPathRooted(path))
+			path = Path.Combine(Environment.CurrentDirectory, path);
 
 		if (IsInvalidPath(path))
 			throw new InvalidDataException($"The path '{path}' is not valid!");
@@ -107,9 +111,8 @@ internal static class FunctionHubUtility {
 	internal static void PrintTaskItem(TaskListItem item)
 		=> PrintTaskItem(item.Path, item.Title, item.Description, item.Status.ToString());
 
-	private static bool IsInvalidPath(string path) {
-		ExceptionMessages.ThrowIfNull(invalidPathChars, nameof(invalidPathChars));
-		foreach (char item in invalidPathChars)
+	internal static bool IsInvalidPath(string path, bool fileName = false) {
+		foreach (char item in fileName ? InvalidFileNameChars : invalidPathChars)
 			if (path.Contains(item))
 				return true;
 		return false;

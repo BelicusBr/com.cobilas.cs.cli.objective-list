@@ -25,6 +25,7 @@ internal static class ClearFunction {
 
 		switch (value[arg130]) {
 			case nameof(opc_help):
+				Printer.Print("Remove all tasks in the .tskl file!");
 				HelpFunctions.ClearHelp();
 				break;
 			default:
