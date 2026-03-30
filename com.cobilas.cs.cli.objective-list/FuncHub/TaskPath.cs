@@ -1,26 +1,27 @@
 ﻿using System;
+using System.Text;
+using Cobilas.Collections;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Cobilas.CLI.ObjectiveList.FuncHub;
 
 internal readonly struct TaskPath : IComparable<TaskPath>, IComparable, IEquatable<TaskPath> {
 	private readonly int[] path;
-	private readonly string _path;
 
-	public TaskPath(string path) { 
-		_path = path;
-		this.path = GetDimension(path);
+	internal int[] Cells => path;
+	internal string Path => string.Join('.', path);
+	internal int CellCount => ArrayManipulation.ArrayLength(path);
+
+	internal int this[int index] {
+		get => path[index];
+		set => path[index] = value;
 	}
 
-	public TaskPath(int[] path) {
-		this.path = path;
-		_path = string.Join('.', path);
-	}
+	internal TaskPath(int[] path) => this.path = path;
 
-	public TaskPath(int path) {
-		this.path = [path];
-		_path = string.Join('.', path);
-	}
+	internal TaskPath(string path) : this(GetDimension(path)) { }
+
+	internal TaskPath(int path) : this([path]) { }
 
 	public int CompareTo(object? obj) {
 		if (obj is TaskPath tskp)
@@ -41,10 +42,14 @@ internal readonly struct TaskPath : IComparable<TaskPath>, IComparable, IEquatab
 			path.Length < other.path.Length ? -1 : 0;
 	}
 
-	public bool IsBlock(TaskPath other) {
-		if (other.path.Length < path.Length)
+	internal bool IsBlock(TaskPath other) {
+		int num1 = other.path.Length > path.Length ? other.path.Length : path.Length;
+		int num2 = other.path.Length < path.Length ? other.path.Length : path.Length;
+
+		if ((num1 - num2) > 1)
 			return false;
-		for (int I = 0; I < path.Length; I++)
+
+		for (int I = 0; I < num2; I++)
 			if (path[I] != other.path[I])
 				return false;
 		return true;
@@ -55,10 +60,24 @@ internal readonly struct TaskPath : IComparable<TaskPath>, IComparable, IEquatab
 
 	public override int GetHashCode() => base.GetHashCode();
 
-	public bool Equals(TaskPath other)
-		=> _path == other._path;
+	public bool Equals(TaskPath other) {
+		if (other.CellCount != CellCount)
+			return false;
+		for (int I = 0; I < CellCount; I++)
+			if (other.path[I] != path[I])
+				return false;
+		return true;
+	}
 
-	public override string ToString() => _path;
+	public override string ToString() => Path;
+
+	public string ToString(int cellCount) {
+		ExceptionMessages.ThrowIfGreaterThan(cellCount, CellCount, nameof(cellCount));
+		StringBuilder builder = new();
+		for (int I = 0; I < cellCount; I++)
+			builder.Append(path[I]).Append('.');
+		return builder.ToString().TrimEnd('.');
+	}
 
 	internal static int[] GetDimension(string path) {
 		string[] paths = path.Split('.', StringSplitOptions.RemoveEmptyEntries);

@@ -3,6 +3,7 @@ using System.IO;
 using System.Xml;
 using System.Text;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Cobilas.CLI.ObjectiveList.FuncHub;
 
@@ -22,13 +23,17 @@ internal static class FunctionHubUtility {
 	};
 	private const string TsklFileNotFoundMessage = "The .tskl file was not found in the directory!";
 
-	internal static bool ValidateTaskStatus(string taskStatus, bool verifyCLIInput = false)
-		=> taskStatus.ToLower() switch {
+	internal static bool ValidateTaskStatus([NotNull]string? taskStatus, bool verifyCLIInput = false) {
+		ExceptionMessages.ThrowIfNullOrEmpty(taskStatus, nameof(taskStatus));
+		return taskStatus.ToLower() switch {
 			"true" or "false" => true,
 			_ => taskStatus == "all" && verifyCLIInput
 		};
+	}
 
-	internal static bool ValidateTaskPath(string taskPath) {
+	internal static bool ValidateTaskPath([NotNull]string? taskPath) {
+		ExceptionMessages.ThrowIfNullOrEmpty(taskPath, nameof(taskPath));
+
 		bool number = false;
 		foreach (char item in taskPath)
 			if (char.IsNumber(item)) number = true;
