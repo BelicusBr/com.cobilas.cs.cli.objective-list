@@ -45,7 +45,6 @@ internal static class InitFunction {
 				} else Printer.Print(InitFileAlreadyExistsMessage);
 				break;
 		}
-
 	}
 
 	private static void DefaultValue(CLIKey alias, CLIValueOrder? value) {
