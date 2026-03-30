@@ -121,12 +121,17 @@ internal static class ElementFunction {
 				return;
 			}
 			TaskPath path1 = new(path);
-			foreach (TaskListItem item in list)
-				if (item.TaskPath == path1) {
-					Printer.PrintException($"The path '{path}' already exists in the task list!");
-					return;
+			bool condition = true;
+			while (condition)
+				for (int I = 0; I < list.Count; I++) {
+					condition = false;
+					if (list[I].TaskPath == path1) {
+						condition = true;
+						path1[path1.CellCount - 1]++;
+						break;
+					}
 				}
-			list.Add(new(TaskPath.GetDimension(path), title, description, "true"));
+			list.Add(new(path1.Cells, title, description, "true"));
 		}
 
 		FunctionHubUtility.SetTaskList(list, filePath);

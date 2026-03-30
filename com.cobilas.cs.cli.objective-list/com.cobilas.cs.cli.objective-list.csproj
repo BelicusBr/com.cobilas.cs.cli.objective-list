@@ -12,7 +12,7 @@
 		<PackageId>Cobilas.CLI.ObjectiveList</PackageId>
 		<Authors>Cobilas</Authors>
 		<Product>Cobilas.CLI.ObjectiveList</Product>
-		<Version>3.0.0</Version>
+		<Version>3.1.0</Version>
 		<AssemblyVersion>$(Version)</AssemblyVersion>
 	</PropertyGroup>
 
