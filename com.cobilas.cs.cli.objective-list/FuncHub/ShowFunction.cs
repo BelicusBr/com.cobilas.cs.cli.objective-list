@@ -35,7 +35,6 @@ internal static partial class ShowFunction {
 		
 		if (iAlias != alias) return;
 
-		string filePath = value[arg123]!;
 		switch (value[arg120]) {
 			case nameof(opc_help):
 				Printer.Print("Allows you to view all tasks present in the .tskl file!");
@@ -44,11 +43,11 @@ internal static partial class ShowFunction {
 			case "sw-item":
 				string path = value[arg121]!;
 				string tShow = value[arg120_1]!;
-				ShowItem(path, tShow == "o-item", filePath);
+				ShowItem(path, tShow == "o-item", FunctionHubUtility.GetFile(value[arg123]));
 				break;
 			case "sw-list":
 				string status = value[arg122]!;
-				ShowList(status, filePath);
+				ShowList(status, FunctionHubUtility.GetFile(value[arg123]));
 				break;
 		}
 	}
