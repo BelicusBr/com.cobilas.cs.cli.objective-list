@@ -119,10 +119,6 @@ internal static class SetFunction {
 			Printer.PrintException($"Use numbers and a '.' period to separate numbers.");
 			Printer.PrintException($"Example: '0' or '0.1' or '0.1.5'.");
 			return;
-		} else if (!FunctionHubUtility.ValidateTaskStatus(status)) {
-			Printer.PrintException($"The input value '{status}' is not a valid status!");
-			Printer.PrintException("Valid input values: 'true', 'false', or 'all'.");
-			return;
 		}
 
 		filePath = FunctionHubUtility.GetFile(filePath);
@@ -184,7 +180,12 @@ internal static class SetFunction {
 						Printer.Print("'.");
 					}
 				}
-				
+				if (!FunctionHubUtility.ValidateTaskStatus(_status)) {
+					Printer.PrintException($"The input value '{_status}' is not a valid status!");
+					Printer.PrintException("Valid input values: 'true', 'false', or 'all'.");
+					return;
+				}
+
 				list[I] = new(path, _title, _description, _status.ToLower());
 				break;
 			}
