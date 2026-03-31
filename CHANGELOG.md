@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.1.1] - (31/03/2026)
+
+### Fixed
+- Fixed potential null reference and file path resolution issues in `ElementFunction`, `SetFunction`, and `ShowFunction` by moving `FunctionHubUtility.GetFile` calls inside the respective switch branches.
+- Debug-only `--tds` function is now conditionally compiled, preventing it from appearing in release builds.
+
+---
+
+## [3.1.0] - (30/03/2026)
+
+### Added
+- Duplicate path avoidance in `ElementFunction.AddElement` – when a task path already exists, the last numeric cell is automatically incremented until a unique path is found.
+- `NotNull` validation for `taskStatus` and `taskPath` parameters in `FunctionHubUtility.ValidateTaskStatus` and `ValidateTaskPath`.
+- `IsBlock(TaskListItem)` and `IsBlock(TaskPath)` methods to `TaskListItem` and `TaskPath` for checking block relationships between tasks.
+- `TaskPath.ToString(int cellCount)` to generate a partial path string up to a specified depth.
+- `Cells`, `CellCount`, and indexer properties to `TaskPath` for direct cell access.
+- Validation in `GenericListExtension.PopList` to detect and throw on duplicate task paths or uncoupled subtasks.
+
+### Changed
+- Refactored `TaskListItem` to delegate path handling to `TaskPath` internally, removing redundant fields (`path`, `cells`).
+- Improved `TaskPath.IsBlock` logic to correctly determine if one path blocks another (difference of at most one level and all previous cells equal).
+- Rewrote `TaskPath.Equals` to compare integer arrays instead of string representation, fixing false positives.
+- Refactored `GenericListExtension.PopList` to use LINQ for cleaner XML parsing and added dedicated validation steps.
+- Updated project version to `3.1.0`.
+
+### Fixed
+- Fixed `TaskPath.IsBlock` incorrectly returning `false` for paths with equal length but different last cell.
+- Fixed `TaskPath.Equals` returning `true` for different arrays with same string representation due to string join.
+
+---
+
 ## [3.1.0] - (30/03/2026)
 
 ### Added
