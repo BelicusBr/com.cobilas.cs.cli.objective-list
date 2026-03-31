@@ -142,7 +142,7 @@ internal class Program {
 		foreach (IFunction item in functions) {
 			if (!item.IsAlias(list.CurrentKey)) continue;
 			TaskDebug.Print($"{item.Alias}|{list.CurrentKey}");
-			if (item.Analyzer(list, message)) {
+			if (((ICLIAnalyzer)item).Analyzer(list, message)) {
 				Printer.PrintException(message);
 				return;
 			}
