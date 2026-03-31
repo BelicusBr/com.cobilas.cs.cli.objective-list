@@ -3,6 +3,8 @@
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
 		<TargetFramework>net6.0</TargetFramework>
+		<Version>3.1.1</Version>
+        <OutDir>bin\$(Version)\$(Configuration)\$(TargetFramework)\Objective list\bin</OutDir>
         <Nullable>enable</Nullable>
         <LangVersion>default</LangVersion>
 		<RootNamespace>Cobilas.CLI.ObjectiveList</RootNamespace>
@@ -12,7 +14,6 @@
 		<PackageId>Cobilas.CLI.ObjectiveList</PackageId>
 		<Authors>Cobilas</Authors>
 		<Product>Cobilas.CLI.ObjectiveList</Product>
-		<Version>3.1.0</Version>
 		<AssemblyVersion>$(Version)</AssemblyVersion>
 	</PropertyGroup>
 

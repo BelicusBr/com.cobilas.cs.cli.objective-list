@@ -46,8 +46,6 @@ internal static class ElementFunction {
 
 		if (iAlias != alias) return;
 
-		string filePath = FunctionHubUtility.GetFile(value[arg145]);
-
 		switch (value[arg140]) {
 			case nameof(opc_help):
 				Printer.Print("Allows you to add and remove tasks from the .tskl file!");
@@ -57,11 +55,11 @@ internal static class ElementFunction {
 				string path = value[arg141]!;
 				string title = value[arg142]!;
 				string description = value[arg143]!;
-				AddElement(path, title, description, filePath);
+				AddElement(path, title, description, FunctionHubUtility.GetFile(value[arg145]));
 				break;
 			case nameof(opc_remove):
 				path = value[arg144]!;
-				RemoveElement(path, filePath);
+				RemoveElement(path, FunctionHubUtility.GetFile(value[arg145]));
 				break;
 		}
 	}

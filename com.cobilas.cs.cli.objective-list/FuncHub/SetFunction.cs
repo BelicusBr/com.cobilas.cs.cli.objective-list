@@ -41,8 +41,6 @@ internal static class SetFunction {
 
 		if (iAlias != alias) return;
 
-		string filePath = value[arg157]!;
-
 		switch (value[arg150]) {
 			case nameof(opc_help):
 				Printer.Print("It allows you to change certain aspects of the task!");
@@ -53,12 +51,12 @@ internal static class SetFunction {
 				string title = value[arg152]!;
 				string desc = value[arg153]!;
 				string status = value[arg154]!;
-				ReplaceOption(path, title, desc, status, filePath);
+				ReplaceOption(path, title, desc, status, FunctionHubUtility.GetFile(value[arg157]));
 				break;
 			case nameof(opc_move):
 				path = value[arg155]!;
 				string moveTo = value[arg156]!;
-				MoveOption(path, moveTo, filePath);
+				MoveOption(path, moveTo, FunctionHubUtility.GetFile(value[arg157]));
 				break;
 		}
 	}
