@@ -7,7 +7,7 @@ using Cobilas.CLI.ObjectiveList.FuncHub;
 
 namespace Cobilas.CLI.ObjectiveList.Elements;
 
-internal readonly struct TaskListFunction(string? alias, TaskListTokens token, params IOptionFunc[]? options) : IFunction, ITypeCode {
+internal readonly struct TaskListFunction(string? alias, TaskListTokens token, params IOptionFunc[]? options) : IFunction, ITypeCode, ICLIAnalyzer {
 	private readonly TaskListTokens token = token;
 	private readonly CLIValueOrder valueOrder = [];
 	private readonly CLIKey alias = alias ?? throw new ArgumentNullException(nameof(alias));
@@ -28,7 +28,7 @@ internal readonly struct TaskListFunction(string? alias, TaskListTokens token, p
 				IOptionFunc opc = options[I];
 				tokens = (TaskListTokens)list.CurrentValue;
 				if (opc.IsAlias(list.CurrentKey) || (opc.IsAlias("{ARG}") && opc.AliasIsTypeCode(tokens))) {
-					if (opc.Analyzer(list, message))
+					if (((ICLIAnalyzer)opc).Analyzer(list, message))
 						return true;
 					if (opc.AliasIsTypeCode(TaskListTokens.Option | TaskListTokens.EndCode))
 						I = Jump(opc as IFunctionJump, options.Count, I);

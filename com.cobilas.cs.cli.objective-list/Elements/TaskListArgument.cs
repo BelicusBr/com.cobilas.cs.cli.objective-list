@@ -7,7 +7,7 @@ using Cobilas.CLI.ObjectiveList.FuncHub;
 
 namespace Cobilas.CLI.ObjectiveList.Elements;
 
-internal readonly struct TaskListArgument(string? alias, bool mandatory) : IArgument, ITypeCode {
+internal readonly struct TaskListArgument(string? alias, bool mandatory) : IArgument, ITypeCode, ICLIAnalyzer {
 	private readonly bool mandatory = mandatory;
 	private readonly CLIKey alias = GetAlias(alias);
 

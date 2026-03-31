@@ -12,7 +12,7 @@ internal readonly struct TaskListOption(
 	bool mandatory, 
 	int countJump, 
 	bool jumpAll,
-	TaskListTokens token) : IOptionFunc, IFunctionJump, ITypeCode {
+	TaskListTokens token) : IOptionFunc, IFunctionJump, ITypeCode, ICLIAnalyzer {
 	private readonly bool jumpAll = jumpAll;
 	private readonly CLIValueOrder iValue = [];
 	private readonly int countJump = countJump;
