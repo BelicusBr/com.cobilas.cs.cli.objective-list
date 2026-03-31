@@ -7,10 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-### [3.1.2] - (31/03/2026)
+### [3.1.3] - (31/03/2026)
 
 #### Fixed
-- Renamed `HelpFunctions.ShowHelp` to `CallShowHelp` in `Program.cs` to resolve a naming conflict with the `ShowHelp` method inside `HelpFunctions`.
+- Moved status validation inside `ReplaceOption` to only validate when the status is actually being replaced, avoiding unnecessary validation when the status argument is not provided.
 
 ---
 
