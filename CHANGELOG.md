@@ -14,6 +14,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### [3.1.2] - (31/03/2026)
+
+#### Fixed
+- Renamed `HelpFunctions.ShowHelp` to `CallShowHelp` in `Program.cs` to resolve a naming conflict with the `ShowHelp` method inside `HelpFunctions`.
+
+---
+
 ## [3.1.1] - (31/03/2026)
 
 ### Fixed
