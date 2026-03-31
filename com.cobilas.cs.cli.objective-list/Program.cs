@@ -164,7 +164,7 @@ internal class Program {
 			if (list.CurrentValue == (long)TaskListTokens.EndCode)
 				Printer.PrintException("No function was called!!!");
 			else Printer.PrintException($"Element '{list.CurrentKey}' not identified!!!");
-			HelpFunctions.ShowHelp();
+			HelpFunctions.CallShowHelp();
 		}
 
 		TaskDebug.Print(list);
