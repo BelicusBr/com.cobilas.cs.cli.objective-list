@@ -2,31 +2,64 @@
 using System.IO;
 using Cobilas.CLI.Manager;
 using System.Collections.Generic;
+using Cobilas.CLI.Manager.Interfaces;
+using Cobilas.CLI.ObjectiveList.Elements;
 
 namespace Cobilas.CLI.ObjectiveList.FuncHub;
 [CallMethod(nameof(SetFunction.Start))]
 internal static class SetFunction {
+	private static readonly CLIKey iAlias = "set";
 	private static readonly CLIKey arg150 = "{150}arg";
+	/// <summary>opc -r path</summary>
 	private static readonly CLIKey arg151 = "{151}arg";
+	/// <summary>opc -r title</summary>
 	private static readonly CLIKey arg152 = "{152}arg";
+	/// <summary>opc -r description</summary>
 	private static readonly CLIKey arg153 = "{153}arg";
+	/// <summary>opc -r status</summary>
 	private static readonly CLIKey arg154 = "{154}arg";
+	/// <summary>opc -m path</summary>
 	private static readonly CLIKey arg155 = "{155}arg";
+	/// <summary>opc -m moveto</summary>
 	private static readonly CLIKey arg156 = "{156}arg";
+	/// <summary>folde/file path</summary>
 	private static readonly CLIKey arg157 = "{157}arg";
 	private static readonly CLIKey opc_move = "--move/-m";
+	private static readonly CLIKey opc_path = "--path/-p";
 	private static readonly CLIKey opc_title = "--title/-t";
-	private static readonly CLIKey opc_help = "-help/--h/--?";
 	private static readonly CLIKey opc_status = "--status/--s";
+	private static readonly CLIKey opc_moveto = "--moveto/-mt";
 	private static readonly CLIKey opc_replace = "--replace/-rp";
 	private static readonly CLIKey opc_description = "--description/-d";
-	private static readonly CLIKey iAlias = "set";
 
 	internal static void Start() {
 		GlobalFunctionHub.EventGenericFunction += Run;
 		GlobalFunctionHub.EventDefaultValue += DefaultValue;
 		GlobalFunctionHub.EventTreatedValue += TreatedValue;
 	}
+
+	internal static IFunction CreateFunction()
+		=> ElementFactory.CreateFunction(iAlias,
+			ElementFactory.CreateOptionEnd(HelpFunction.opc_help, mandatory: false),
+			//replace function
+			ElementFactory.CreateOptionJump(opc_replace, false, 8),
+			ElementFactory.CreateOption(opc_path),
+			ElementFactory.CreatArgument(arg151),
+			ElementFactory.CreateOptionJump(opc_title, false, 1),
+			ElementFactory.CreatArgument(arg152),
+			ElementFactory.CreateOptionJump(opc_description, false, 1),
+			ElementFactory.CreatArgument(arg153),
+			ElementFactory.CreateOptionJump(opc_status, false, 1),
+			ElementFactory.CreatArgument(arg154),
+			//move function
+			ElementFactory.CreateOptionJump(opc_move, false, 4),
+			ElementFactory.CreateOption(opc_path),
+			ElementFactory.CreatArgument(arg155),
+			ElementFactory.CreateOption(opc_moveto),
+			ElementFactory.CreatArgument(arg156),
+			//element argument
+			ElementFactory.CreatArgument(arg157, false)
+		);
 
 	//{151}arg => -rp/path
 	//{152}arg => title
@@ -42,9 +75,9 @@ internal static class SetFunction {
 		if (iAlias != alias) return;
 
 		switch (value[arg150]) {
-			case nameof(opc_help):
+			case nameof(HelpFunction.opc_help):
 				Printer.Print("It allows you to change certain aspects of the task!");
-				HelpFunctions.SetHelp();
+				HelpFunction.SetHelp();
 				break;
 			case nameof(opc_replace):
 				string path = value[arg151]!;
@@ -102,8 +135,8 @@ internal static class SetFunction {
 			value.Add(arg150, nameof(opc_move));
 		else if (alias == opc_replace)
 			value.Add(arg150, nameof(opc_replace));
-		else if (alias == opc_help)
-			value.Add(arg150, nameof(opc_help));
+		else if (alias == HelpFunction.opc_help)
+			value.Add(arg150, nameof(HelpFunction.opc_help));
 	}
 
 	private static void ReplaceOption(

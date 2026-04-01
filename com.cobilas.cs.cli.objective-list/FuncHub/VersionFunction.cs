@@ -1,12 +1,13 @@
 ﻿using System;
 using Cobilas.CLI.Manager;
+using Cobilas.CLI.Manager.Interfaces;
+using Cobilas.CLI.ObjectiveList.Elements;
 
 namespace Cobilas.CLI.ObjectiveList.FuncHub;
 [CallMethod(nameof(VersionFunction.Start))]
 internal static class VersionFunction {
 	private static readonly CLIKey arg100 = "{100}arg";
 	private static readonly CLIKey iAlias = "--version/-v";
-	private static readonly CLIKey opc_help = "-help/--h/--?";
 
 	internal static void Start() {
 		GlobalFunctionHub.EventGenericFunction += Run;
@@ -14,15 +15,20 @@ internal static class VersionFunction {
 		GlobalFunctionHub.EventTreatedValue += TreatedValue;
 	}
 
+	internal static IFunction CreateFunction()
+		=> ElementFactory.CreateFunction(iAlias,
+			ElementFactory.CreateOptionEnd(HelpFunction.opc_help, mandatory: false)
+		);
+
 	private static void Run(CLIKey alias, CLIValueOrder? value) {
 		ExceptionMessages.ThrowIfNull(value, nameof(value));
 
 		if (iAlias != alias) return;
 
 		switch (value[arg100]) {
-			case nameof(opc_help):
+			case nameof(HelpFunction.opc_help):
 				Printer.Print("Show the current version of the app!");
-				HelpFunctions.VersionHelp();
+				HelpFunction.VersionHelp();
 				break;
 			default:
 				Printer.EnableNewLine = false;
@@ -39,7 +45,7 @@ internal static class VersionFunction {
 
 		if (iAlias != (CLIKey)funcValue) return;
 
-		if (alias == opc_help)
+		if (alias == HelpFunction.opc_help)
 			value.Add(arg100, "none");
 	}
 
@@ -50,7 +56,7 @@ internal static class VersionFunction {
 
 		if (iAlias != (CLIKey)funcValue) return;
 
-		if (alias == opc_help)
-			value.Add(arg100, nameof(opc_help));
+		if (alias == HelpFunction.opc_help)
+			value.Add(arg100, nameof(HelpFunction.opc_help));
 	}
 }

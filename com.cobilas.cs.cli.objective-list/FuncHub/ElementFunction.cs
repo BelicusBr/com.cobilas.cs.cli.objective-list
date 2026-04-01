@@ -2,6 +2,8 @@
 using System.IO;
 using Cobilas.CLI.Manager;
 using System.Collections.Generic;
+using Cobilas.CLI.Manager.Interfaces;
+using Cobilas.CLI.ObjectiveList.Elements;
 
 namespace Cobilas.CLI.ObjectiveList.FuncHub;
 [CallMethod(nameof(ElementFunction.Start))]
@@ -24,8 +26,8 @@ internal static class ElementFunction {
 	/// <summary>opc type</summary>
 	private static readonly CLIKey opc_remove = "remove";
 	private static readonly CLIKey iAlias = "--element/-e";
+	private static readonly CLIKey opc_title = "--title/-t";
 	private static readonly CLIKey opc_a_path = "--path/-p";
-	private static readonly CLIKey opc_help = "-help/--h/--?";
 	private static readonly CLIKey opc_a_desc = "--description/-d";
 
 	internal static void Start() {
@@ -33,6 +35,25 @@ internal static class ElementFunction {
 		GlobalFunctionHub.EventDefaultValue += DefaultValue;
 		GlobalFunctionHub.EventTreatedValue += TreatedValue;
 	}
+
+	internal static IFunction CreateFunction()
+		=> ElementFactory.CreateFunction(iAlias,
+			ElementFactory.CreateOptionEnd(HelpFunction.opc_help, mandatory: false),
+			//add function
+			ElementFactory.CreateOptionJump(opc_add, false, 6),
+			ElementFactory.CreateOptionJump(opc_a_path, false, 1),
+			ElementFactory.CreatArgument(arg141),
+			ElementFactory.CreateOption(opc_title),
+			ElementFactory.CreatArgument(arg142),
+			ElementFactory.CreateOptionJump(opc_a_desc, false, 1),
+			ElementFactory.CreatArgument(arg143),
+			//remove function
+			ElementFactory.CreateOptionJump(opc_remove, false, 2),
+			ElementFactory.CreateOption(opc_a_path),
+			ElementFactory.CreatArgument(arg144),
+			//element argument
+			ElementFactory.CreatArgument(arg145, false)
+		);
 
 	//{140}arg opc type
 	//{141}arg add opc path
@@ -47,9 +68,9 @@ internal static class ElementFunction {
 		if (iAlias != alias) return;
 
 		switch (value[arg140]) {
-			case nameof(opc_help):
+			case nameof(HelpFunction.opc_help):
 				Printer.Print("Allows you to add and remove tasks from the .tskl file!");
-				HelpFunctions.ElementHelp();
+				HelpFunction.ElementHelp();
 				break;
 			case nameof(opc_add):
 				string path = value[arg141]!;
@@ -88,8 +109,8 @@ internal static class ElementFunction {
 			value.Add(arg140, nameof(opc_add));
 		else if (alias == opc_remove)
 			value.Add(arg140, nameof(opc_remove));
-		else if (alias == opc_help)
-			value.Add(arg140, nameof(opc_help));
+		else if (alias == HelpFunction.opc_help)
+			value.Add(arg140, nameof(HelpFunction.opc_help));
 		else if (alias == arg141)
 			value.Add(arg141, list.CurrentKey);
 		else if (alias == arg142)

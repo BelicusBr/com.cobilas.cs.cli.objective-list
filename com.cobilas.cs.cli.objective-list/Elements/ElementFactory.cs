@@ -17,7 +17,7 @@ internal static class ElementFactory {
 	internal static IArgument CreatArgument(string? alias, bool mandatory = true)
 		=> new TaskListArgument(alias, mandatory);
 
-	internal static IFunction CreatFunction(string? alias, params IOptionFunc[]? options)
+	internal static IFunction CreateFunction(string? alias, params IOptionFunc[]? options)
 		=> new TaskListFunction(alias, TaskListTokens.Function, options);
 
 	internal static void StartTokens() {
@@ -37,6 +37,7 @@ internal static class ElementFactory {
 			"--item/--i",
 			"--path/-p",
 			"--list/-l",
+			//"--to-json-output/-tjo",
 			"--otk/--stk",
 			"add",
 			"remove",
@@ -61,7 +62,8 @@ internal static class ElementFactory {
 
 	private static void CreateTokens(long tokenId, params string[] tokens) {
 		foreach (string item in tokens)
-			CLIParse.AddToken(tokenId, item.Split('/', System.StringSplitOptions.RemoveEmptyEntries));
+			if (item != string.Empty)
+				CLIParse.AddToken(tokenId, item.Split('/', System.StringSplitOptions.RemoveEmptyEntries));
 	}
 
 	private static IOptionFunc ICreateOption(

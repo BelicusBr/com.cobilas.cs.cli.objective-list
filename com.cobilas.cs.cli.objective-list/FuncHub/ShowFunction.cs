@@ -1,28 +1,44 @@
 ﻿using System;
 using System.IO;
-using System.Xml;
 using Cobilas.CLI.Manager;
 using System.Collections.Generic;
+using Cobilas.CLI.Manager.Interfaces;
+using Cobilas.CLI.ObjectiveList.Elements;
 
 namespace Cobilas.CLI.ObjectiveList.FuncHub;
 [CallMethod(nameof(ShowFunction.Start))]
 internal static partial class ShowFunction {
-	private static readonly CLIKey arg120 = "{120}arg";
+	/// <summary>opc --i path</summary>
 	private static readonly CLIKey arg121 = "{121}arg";
+	/// <summary>opc -l status</summary>
 	private static readonly CLIKey arg122 = "{122}arg";
+	/// <summary>file/folder path</summary>
 	private static readonly CLIKey arg123 = "{123}arg";
 	private static readonly CLIKey iAlias = "--show/-s";
+	private static readonly CLIKey arg1200 = "{1200}arg";
+	private static readonly CLIKey arg1201 = "{1201}arg";
 	private static readonly CLIKey opc_list = "--list/-l";
-	private static readonly CLIKey arg120_1 = "{120-1}arg";
+	private static readonly CLIKey opc_path = "--path/-p";
 	private static readonly CLIKey opc_item = "--item/--i";
 	private static readonly CLIKey otk_stk = "--otk/--stk";
-	private static readonly CLIKey opc_help = "-help/--h/--?";
 
 	internal static void Start() {
 		GlobalFunctionHub.EventGenericFunction += Run;
 		GlobalFunctionHub.EventDefaultValue += DefaultValue;
 		GlobalFunctionHub.EventTreatedValue += TreatedValue;
 	}
+
+	internal static IFunction CreateFunction()
+		=> ElementFactory.CreateFunction(iAlias,
+			ElementFactory.CreateOptionEnd(HelpFunction.opc_help, mandatory: false),
+			ElementFactory.CreateOptionJump(opc_item, false, 3),
+			ElementFactory.CreateOption(otk_stk, false),
+			ElementFactory.CreateOptionJump(opc_path),
+			ElementFactory.CreatArgument(arg121),
+			ElementFactory.CreateOptionJump(opc_list, false, 1),
+			ElementFactory.CreatArgument(arg122, false),
+			ElementFactory.CreatArgument(arg123, false)
+		);
 
 	//{120}arg
 	//{120-1}arg
@@ -35,14 +51,14 @@ internal static partial class ShowFunction {
 		
 		if (iAlias != alias) return;
 
-		switch (value[arg120]) {
-			case nameof(opc_help):
+		switch (value[arg1200]) {
+			case nameof(HelpFunction.opc_help):
 				Printer.Print("Allows you to view all tasks present in the .tskl file!");
-				HelpFunctions.ShowHelp();
+				HelpFunction.ShowHelp();
 				break;
 			case "sw-item":
 				string path = value[arg121]!;
-				string tShow = value[arg120_1]!;
+				string tShow = value[arg1201]!;
 				ShowItem(path, tShow == "o-item", FunctionHubUtility.GetFile(value[arg123]));
 				break;
 			case "sw-list":
@@ -63,7 +79,7 @@ internal static partial class ShowFunction {
 		else if (alias == arg123)
 			value.Add(arg123, Path.Combine(Environment.CurrentDirectory, InitFunction.DefaultFileName));
 		else if (alias == otk_stk)
-			value.Add(arg120_1, "o-s-item");
+			value.Add(arg1201, "o-s-item");
 	}
 
 	private static void TreatedValue(CLIKey alias, CLIValueOrder? value, TokenList? list) {
@@ -80,18 +96,18 @@ internal static partial class ShowFunction {
 		else if (alias == arg123)
 			value.Add(arg123, list.CurrentKey);
 		else if (alias == opc_item)
-			value.Add(arg120, "sw-item");
+			value.Add(arg1200, "sw-item");
 		else if (alias == opc_list)
-			value.Add(arg120, "sw-list");
-		else if (alias == opc_help)
-			value.Add(arg120, nameof(opc_help));
+			value.Add(arg1200, "sw-list");
+		else if (alias == HelpFunction.opc_help)
+			value.Add(arg1200, nameof(HelpFunction.opc_help));
 		else if (alias == otk_stk)
 			switch (list.CurrentKey) {
 				case "--otk":
-					value.Add(arg120_1, "o-item");
+					value.Add(arg1201, "o-item");
 					break;
 				default:
-					value.Add(arg120_1, "o-s-item");
+					value.Add(arg1201, "o-s-item");
 					break;
 			}
 	}
