@@ -2,8 +2,8 @@
 using Cobilas.CLI.Manager;
 using System.Collections.Generic;
 using Cobilas.CLI.Manager.Interfaces;
-using Cobilas.CLI.ObjectiveList.Interfaces;
 using Cobilas.CLI.ObjectiveList.FuncHub;
+using Cobilas.CLI.ObjectiveList.Interfaces;
 
 namespace Cobilas.CLI.ObjectiveList.Elements;
 
