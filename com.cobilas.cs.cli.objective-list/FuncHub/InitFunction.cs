@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using Cobilas.CLI.Manager;
+using Cobilas.CLI.Manager.Interfaces;
+using Cobilas.CLI.ObjectiveList.Elements;
 
 namespace Cobilas.CLI.ObjectiveList.FuncHub;
 [CallMethod(nameof(InitFunction.Start))]
@@ -10,7 +12,6 @@ internal static class InitFunction {
 	private static readonly CLIKey iAlias = "init/-i";
 	private static readonly CLIKey arg110 = "{110}arg";
 	private static readonly CLIKey arg111 = "{111}arg";
-	private static readonly CLIKey opc_help = "-help/--h/--?";
 	private const string InitFileCreatedMessage = "The init.tskl file has already been created!!!";
 	private const string InitFileAlreadyExistsMessage = "The init.tskl file was not created because it already exists!";
 
@@ -20,6 +21,12 @@ internal static class InitFunction {
 		GlobalFunctionHub.EventTreatedValue += TreatedValue;
 	}
 
+	internal static IFunction CreateFunction()
+		=> ElementFactory.CreateFunction(iAlias,
+			ElementFactory.CreateOptionEnd(HelpFunction.opc_help, mandatory: false),
+			ElementFactory.CreatArgument(arg111, false)
+		);
+
 	//{111}arg folder path
 
 	private static void Run(CLIKey alias, CLIValueOrder? value) {
@@ -27,9 +34,9 @@ internal static class InitFunction {
 
 		if (iAlias != alias) return;
 		switch (value[arg110]) {
-			case nameof(opc_help):
+			case nameof(HelpFunction.opc_help):
 				Printer.Print("Initializes a new .tskl file!");
-				HelpFunctions.InitHelp();
+				HelpFunction.InitHelp();
 				break;
 			default:
 				string folderPath = value[arg111]!;
@@ -54,7 +61,7 @@ internal static class InitFunction {
 		if (iAlias != (CLIKey)funcValue) return;
 		if (alias == arg111)
 			value.Add(arg111, Environment.CurrentDirectory);
-		else if (alias == opc_help)
+		else if (alias == HelpFunction.opc_help)
 			value.Add(arg110, "none");
 	}
 
@@ -67,7 +74,7 @@ internal static class InitFunction {
 		
 		if (alias == arg111)
 			value.Add(arg111, list.CurrentKey);
-		else if (alias == opc_help)
-			value.Add(arg110, nameof(opc_help));
+		else if (alias == HelpFunction.opc_help)
+			value.Add(arg110, nameof(HelpFunction.opc_help));
 	}
 }

@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.2.0] - (01/04/2026)
+
+### Added
+- `CreateFunction` static method added to each command class (`ClearFunction`, `ElementFunction`, `HelpFunction`, `InitFunction`, `RenameFunction`, `SetFunction`, `ShowFunction`, `VersionFunction`) to encapsulate the CLI definition using `ElementFactory`.
+- Centralized help option constant `opc_help` into `HelpFunction` class, replacing local definitions across command files.
+- Documentation for escape sequences in task descriptions:
+  - `\cls` – Clears the description.
+  - `(CR)` – Carriage Return.
+  - `(LF)` – Line Feed.
+  - `(CRLF)` – Carriage Return + Line Feed.
+- Validation to skip empty strings when registering tokens in `ElementFactory.CreateTokens`.
+
+### Changed
+- Renamed `ElementFactory.CreatFunction` to `ElementFactory.CreateFunction` (capital “C”) for consistent naming.
+- Refactored `Program.cs` to use the new `CreateFunction` methods instead of inline function definitions, greatly simplifying the entry point.
+- Standardized argument keys across functions (e.g., `arg1000` for help option in `RenameFunction`, `arg1200`/`arg1201` in `ShowFunction`).
+- Improved help output formatting for the `--description/-d` option to include the new escape sequence notes.
+
+### Fixed
+- Potential token registration issues caused by empty strings in token arrays are now avoided.
+
+---
+
 ### [3.1.3] - (31/03/2026)
 
 #### Fixed

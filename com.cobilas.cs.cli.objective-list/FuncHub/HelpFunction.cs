@@ -1,15 +1,24 @@
-﻿using System;
-using Cobilas.CLI.Manager;
+﻿using Cobilas.CLI.Manager;
+using Cobilas.CLI.Manager.Interfaces;
+using Cobilas.CLI.ObjectiveList.Elements;
 
 namespace Cobilas.CLI.ObjectiveList.FuncHub;
-[CallMethod(nameof(HelpFunctions.Start))]
-internal static class HelpFunctions {
+[CallMethod(nameof(HelpFunction.Start))]
+internal static class HelpFunction {
+	/// <summary>-help/--h/--?</summary>
+	internal static readonly CLIKey opc_help = "-help/--h/--?";
+	// <summary>--to-json-output/-tjo</summary>
+	//internal static readonly CLIKey opc_tjo = "--to-json-output/-tjo";
+
 	private static readonly CLIKey iAlias = "help/-h/-?";
 	private const string descriptionOpcHelp = "Describe how this function works and what options it offers!";
 
 	internal static void Start() {
 		GlobalFunctionHub.EventGenericFunction += Run;
 	}
+
+	internal static IFunction CreateFunction()
+		=> ElementFactory.CreateFunction(iAlias);
 
 	internal static void CallShowHelp() => Run("-h", null);
 
@@ -246,8 +255,15 @@ internal static class HelpFunctions {
 
 		Printer.Print("[");
 		Printer.PrintWarning("--description/-d:Is optional");
-		Printer.Print("]\t|\tRedefine the task description!\r\n");
+		Printer.EnableNewLine = true;
+		Printer.Print("]");
+		Printer.Print("Define the task description!");
+		Printer.Print("\t> \\cls: Used to clean up the task description.");
+		Printer.Print("\t> (CR): Used to insert a Carriage Return (CR) in the description.");
+		Printer.Print("\t> (LF): Used to insert a Line Feed (LF) in the description.");
+		Printer.Print("\t> (CRLF): Used to insert a (Carriage Return (CR) + Line Feed (LF)) in the description.\r\n");
 
+		Printer.EnableNewLine = false;
 		Printer.Print("[");
 		Printer.PrintWarning("--status/--s:Is optional");
 		Printer.EnableNewLine = true;

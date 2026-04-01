@@ -1,22 +1,32 @@
 ﻿using System;
 using System.IO;
 using Cobilas.CLI.Manager;
+using Cobilas.CLI.Manager.Interfaces;
+using Cobilas.CLI.ObjectiveList.Elements;
 
 namespace Cobilas.CLI.ObjectiveList.FuncHub;
 [CallMethod(nameof(RenameFunction.Start))]
 internal static class RenameFunction {
-	private static readonly CLIKey arg100 = "{100}arg";
 	private static readonly CLIKey arg105 = "{105}arg";
 	private static readonly CLIKey arg106 = "{106}arg";
 	private static readonly CLIKey arg107 = "{107}arg";
+	private static readonly CLIKey arg1000 = "{1000}arg";
 	private static readonly CLIKey iAlias = "--rename/-r";
-	private static readonly CLIKey opc_help = "-help/--h/--?";
 
 	internal static void Start() {
 		GlobalFunctionHub.EventGenericFunction += Run;
 		GlobalFunctionHub.EventTreatedValue += TreatedValue;
 		GlobalFunctionHub.EventDefaultValue += DefaultValue;
 	}
+
+	internal static IFunction CreateFunction()
+		=> ElementFactory.CreateFunction(iAlias,
+			ElementFactory.CreateOptionEnd(HelpFunction.opc_help, mandatory: false),
+			ElementFactory.CreatArgument(arg105),
+			ElementFactory.CreatArgument(arg106),
+			ElementFactory.CreatArgument(arg107, false)
+		);
+
 	/*
 	 {105}arg = old name
 	 {106}arg = new name
@@ -27,10 +37,10 @@ internal static class RenameFunction {
 
 		if (iAlias != alias) return;
 
-		switch (value[arg100]) {
-			case nameof(opc_help):
+		switch (value[arg1000]) {
+			case nameof(HelpFunction.opc_help):
 				Printer.Print("Allows you to rename the .tskl file!");
-				HelpFunctions.RenameHelp();
+				HelpFunction.RenameHelp();
 				break;
 			default:
 				string oldName = value[arg105]!;
@@ -73,8 +83,8 @@ internal static class RenameFunction {
 
 		if (alias == arg107)
 			value.Add(arg107, Environment.CurrentDirectory);
-		else if (alias == opc_help)
-			value.Add(arg100, "none");
+		else if (alias == HelpFunction.opc_help)
+			value.Add(arg1000, "none");
 	}
 
 	private static void TreatedValue(CLIKey alias, CLIValueOrder? value, TokenList? list) {
@@ -90,7 +100,7 @@ internal static class RenameFunction {
 			value.Add(arg106, list.CurrentKey);
 		else if (alias == arg107)
 			value.Add(arg107, list.CurrentKey);
-		else if (alias == opc_help)
-			value.Add(arg100, nameof(opc_help));
+		else if (alias == HelpFunction.opc_help)
+			value.Add(arg1000, nameof(HelpFunction.opc_help));
 	}
 }
