@@ -26,6 +26,7 @@
         <None Include="..\README.md" />
         <None Include="..\LICENSE.md" />
         <None Include="..\CHANGELOG.md" />
+		<None Include="..\project-git-funcs.ps1" />
     </ItemGroup>
     
 	<ItemGroup>
