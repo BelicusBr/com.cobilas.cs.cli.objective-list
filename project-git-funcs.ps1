@@ -31,5 +31,5 @@ Switch -Wildcard ($a_branch) {
 $branchs = git remote
 
 foreach ($branch in $branchs) {
-	push-all $branch
+	push-all $branch $True
 }
